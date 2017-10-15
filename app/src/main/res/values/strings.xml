@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">ContrateDiarista</string>
+    <string name="login">login</string>
+    <string name="senha">senha</string>
+    <string name="logar">logar</string>
+    <string name="preencha_login_senha">Preencha campos login e senha</string>
+    <string name="sair">Sair</string>
+    <string name="ERROR_WRONG_PASSWORD">Senha inválida</string>
+    <string name="ERROR_USER_NOT_FOUND">Usuário inválido</string>
+    <string name="ERROR_INVALID_EMAIL">Email no formato inválido</string>
+    <string name="action_settings">Configurações</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="principal">Principal</string>
+    <string name="mensagens">Mensagens</string>
+    <string name="conversas">Conversas</string>
+    <string name="cadastrar_vaga">Cadastrar Vaga</string>
+    <string name="data_inicial">Data Inicial</string>
+    <string name="data_final">Data Final</string>
+    <string name="valor_periodo">Valor Periodo</string>
+    <string name="tipo_periodo">Tipo Período</string>
+    <string name="tipos_atividades">Tipos Atividade</string>
+</resources>

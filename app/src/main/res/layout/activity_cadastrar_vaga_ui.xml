@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.contratediarista.br.contratediarista.ui.CadastrarVagaUi">
+
+    <TextView
+        android:id="@+id/tv_data_inicial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_inicial"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"/>
+    <EditText
+        android:id="@+id/et_data_inicial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:maxLength="10"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:hint="99/99/9999"
+        android:inputType="date" />
+    <TextView
+        android:id="@+id/tv_data_final"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_final"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"/>
+    <EditText
+        android:id="@+id/et_data_final"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:maxLength="10"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:hint="99/99/9999"
+        android:inputType="date" />
+
+    <TextView
+        android:id="@+id/valor_periodo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:text="@string/valor_periodo"/>
+
+    <EditText
+        android:id="@+id/et_valor_periodo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/tv_tipo_periodo"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tipo_periodo"/>
+
+    <Spinner
+        android:id="@+id/sp_tipo_periodo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dialog"/>
+
+    <TextView
+        android:id="@+id/tv_tipo_atividades"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tipos_atividades"/>
+
+    <Che
+
+    <Button
+        android:id="@+id/btn_cadastrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="@string/cadastrar_vaga"/>
+
+
+</LinearLayout>

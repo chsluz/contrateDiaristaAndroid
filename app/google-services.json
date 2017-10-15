@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "166088401573",
+    "firebase_url": "https://contratediarista-64f5f.firebaseio.com",
+    "project_id": "contratediarista-64f5f",
+    "storage_bucket": "contratediarista-64f5f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166088401573:android:2fb68c690e332392",
+        "android_client_info": {
+          "package_name": "com.contratediarista.br.contratediarista"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166088401573-52u7694olatr70cqgem0c6o48lkgn843.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.contratediarista.br.contratediarista",
+            "certificate_hash": "d746e318438fbff1699dd7e98cd76f0dfd632ccb"
+          }
+        },
+        {
+          "client_id": "166088401573-8p8vh2bkqsnpglb86n6d1diltgfcijl2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEm49EODoro5UQEtSntKvDy3cfQF39LpI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166088401573-8p8vh2bkqsnpglb86n6d1diltgfcijl2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
