@@ -2,6 +2,9 @@ package com.contratediarista.br.contratediarista.retrofit;
 
 import android.util.Log;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -15,9 +18,14 @@ public class RetrofitInicializador {
     public RetrofitInicializador() {
         try {
             if(retrofit == null) {
+                OkHttpClient cliente = new OkHttpClient.Builder()
+                        .connectTimeout(1, TimeUnit.MINUTES)
+                        .readTimeout(1,TimeUnit.MINUTES)
+                        .writeTimeout(1,TimeUnit.MINUTES).build();
                 retrofit = new Retrofit.Builder()
                         .baseUrl("http://192.168.25.210:8080/ContrateDiarista/api/")
                         .addConverterFactory(GsonConverterFactory.create())
+                        .client(cliente)
                         .build();
             }
         }catch (Exception e) {

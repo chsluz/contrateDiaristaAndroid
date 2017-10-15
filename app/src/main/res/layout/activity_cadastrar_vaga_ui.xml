@@ -11,36 +11,39 @@
         android:id="@+id/tv_data_inicial"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/data_inicial"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"/>
+        android:text="@string/data_inicial" />
+
     <EditText
         android:id="@+id/et_data_inicial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:maxLength="10"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="3dp"
+        android:ems="10"
         android:hint="99/99/9999"
-        android:inputType="date" />
+        android:inputType="date"
+        android:maxLength="10" />
+
     <TextView
         android:id="@+id/tv_data_final"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/data_final"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"/>
+        android:text="@string/data_final" />
+
     <EditText
         android:id="@+id/et_data_final"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:maxLength="10"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="3dp"
+        android:ems="10"
         android:hint="99/99/9999"
-        android:inputType="date" />
+        android:inputType="date"
+        android:maxLength="10" />
 
     <TextView
         android:id="@+id/valor_periodo"
@@ -48,47 +51,93 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="3dp"
-        android:text="@string/valor_periodo"/>
+        android:text="@string/valor_periodo" />
 
     <EditText
         android:id="@+id/et_valor_periodo"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
         android:inputType="number" />
 
     <TextView
         android:id="@+id/tv_tipo_periodo"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="3dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/tipo_periodo"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:text="@string/tipo_periodo" />
 
     <Spinner
         android:id="@+id/sp_tipo_periodo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:spinnerMode="dialog"/>
+        android:layout_height="30dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginLeft="10dp"
+        android:spinnerMode="dialog" />
 
     <TextView
-        android:id="@+id/tv_tipo_atividades"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="3dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/tipos_atividades"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
+        android:text="@string/dias_semana" />
 
-    <Che
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/check_seg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/seg" />
+
+        <CheckBox
+            android:id="@+id/check_ter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ter" />
+
+        <CheckBox
+            android:id="@+id/check_qua"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/qua" />
+
+        <CheckBox
+            android:id="@+id/check_qui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/qui" />
+
+        <CheckBox
+            android:id="@+id/check_sex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sex" />
+
+        <CheckBox
+            android:id="@+id/check_sab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sab" />
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/btn_cadastrar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:text="@string/cadastrar_vaga"/>
+        android:layout_marginTop="5dp"
+        android:text="@string/cadastrar_vaga"
+        android:onClick="cadastrarVaga"/>
 
 
 </LinearLayout>

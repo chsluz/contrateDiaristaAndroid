@@ -120,13 +120,13 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
         if(usuario.getTipoUsuario().equals(TipoUsuario.PRESTADOR)) {
             if (position == 5) {
                 Intent intent = new Intent(PrincipalUi.this, MensagensUi.class);
-                intent.putExtra("uidUsuario",usuario.getUid());
                 startActivity(intent);
             }
         }
         else{
             if(position == 0) {
                 Intent intent = new Intent(PrincipalUi.this,CadastrarVagaUi.class);
+                intent.putExtra("uidUsuario",usuario.getUid());
                 startActivity(intent);
             }
 

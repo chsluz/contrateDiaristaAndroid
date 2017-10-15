@@ -21,4 +21,14 @@
     <string name="valor_periodo">Valor Periodo</string>
     <string name="tipo_periodo">Tipo Período</string>
     <string name="tipos_atividades">Tipos Atividade</string>
+    <string name="dias_semana">Dias da Semana</string>
+    <string name="seg">Seg</string>
+    <string name="ter">Ter</string>
+    <string name="qua">Qua</string>
+    <string name="qui">Qui</string>
+    <string name="sex">Sex</string>
+    <string name="sab">Sáb</string>
+    <string name="cadastrando_vaga">Cadastrando vaga</string>
+    <string name="erro_cadastrar_vaga">Erro ao cadastrar vaga</string>
+    <string name="vaga_cadastrado_sucesso">Vaga Cadastrada com sucesso</string>
 </resources>

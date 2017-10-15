@@ -4,14 +4,12 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.contratediarista.br.contratediarista.R;
-import com.contratediarista.br.contratediarista.adapter.ConversaAdapter;
 import com.contratediarista.br.contratediarista.adapter.MensagemAdapter;
 import com.contratediarista.br.contratediarista.entity.Conversa;
 import com.contratediarista.br.contratediarista.entity.Mensagem;
@@ -23,7 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ConversaActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
