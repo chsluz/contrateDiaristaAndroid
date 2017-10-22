@@ -1,7 +1,11 @@
 package com.contratediarista.br.contratediarista.ui;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.contratediarista.br.contratediarista.R;
+import com.contratediarista.br.contratediarista.helper.Permissao;
 import com.contratediarista.br.contratediarista.retrofit.firebase.FirebaseInicializador;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,11 +32,15 @@ public class LoginUi extends AppCompatActivity {
     private EditText etSenha;
     private Button btnLogar;
     private String chaveUsuarioLogado;
+    private String[] permissoes = new String[]{
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_ui);
+        Permissao.validaPermissoes(1,this,permissoes);
         firebaseAuth = FirebaseInicializador.getFirebaseAuth();
         etLogin = (EditText) findViewById(R.id.et_email);
         etSenha = (EditText) findViewById(R.id.et_senha);
@@ -87,6 +96,35 @@ public class LoginUi extends AppCompatActivity {
                 chave = getString(R.string.ERROR_INVALID_EMAIL);
             }
         }
+        else{
+            chave = e.getMessage();
+        }
         Toast.makeText(this, chave, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        for(int result : grantResults) {
+            if(result == PackageManager.PERMISSION_DENIED) {
+                alertaValidacaoPermissao();
+            }
+        }
+    }
+
+    public void  alertaValidacaoPermissao() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Permissões negadas");
+        alert.setMessage("Para utiliza o app, é necessário aceitar as permissões");
+        alert.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        AlertDialog dialog = alert.create();
+        dialog.show();
     }
 }

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.contratediarista.br.contratediarista">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,6 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAitnjHog4uyzeyIIaTHPn3AC9Z51k8IQo " />
+
         <activity android:name=".ui.LoginUi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +31,31 @@
         <activity
             android:name=".ui.MensagensUi"
             android:label="@string/mensagens" />
-        <activity android:name=".ui.CadastrarVagaUi" android:label="@string/cadastrar_vaga"/>
+        <activity
+            android:name=".ui.CadastrarVagaUi"
+            android:label="@string/cadastrar_vaga" />
+        <activity
+            android:name=".ui.CadastrarDisponibilidadeUi"
+            android:label="@string/cadastrar_disponibilidade" />
+        <activity android:name=".ui.CadastrarTipoAtividadeUi" />
+        <activity
+            android:name=".ui.ConsultarVagasUi"
+            android:label="@string/buscar_vagas" />
+        <activity
+            android:name=".ui.VagasUi"
+            android:label="@string/vagas" />
+        <activity
+            android:name=".ui.VisualizacaoVagaUi"
+            android:label="@string/visualizar_informacoes_vaga" />
+        <activity android:name=".ui.VisualizarVagasVinculadasUi" android:label="@string/visualizar_vagas_vinculadas"/>
+        <activity android:name=".ui.AvaliacaoContratanteUi" android:label="@string/avaliar_contratante"/>
+        <activity android:name=".ui.ConsultarDisponibilidade" android:label="@string/consultar_disponibilidade"/>
+        <activity android:name=".ui.AprovacaoVagasUi" android:label="@string/aprovacao_vagas"/>
+        <activity android:name=".ui.VisualizarAprovacaoVagaUi" android:label="@string/visualizar_aprovacao_vagas" />
+        <activity android:name=".ui.InformacoesAprovacaoUi" android:label="@string/informacoes_aprovacao"/>
+        <activity android:name=".ui.InformacoesUsuarioUi"  android:label="@string/informacoes_usuario"/>
+        <activity android:name=".ui.ConsultarDisponibilidadePrestadorUi" android:label="@string/consultar_disponibilidades_cadastradas"/>
+        <activity android:name=".ui.ListarDisponibilidadePrestadorUi" android:label="@string/listar_disponibilidades"></activity>
     </application>
 
 </manifest>

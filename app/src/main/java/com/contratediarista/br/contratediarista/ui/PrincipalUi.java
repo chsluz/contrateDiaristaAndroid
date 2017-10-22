@@ -15,8 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.contratediarista.br.contratediarista.R;
+import com.contratediarista.br.contratediarista.adapter.MenuPrincipalAdapter;
 import com.contratediarista.br.contratediarista.entity.Usuario;
 import com.contratediarista.br.contratediarista.enuns.TipoUsuario;
+import com.contratediarista.br.contratediarista.retrofit.RetrofitCallback;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitInicializador;
 import com.contratediarista.br.contratediarista.retrofit.firebase.FirebaseInicializador;
 import com.contratediarista.br.contratediarista.retrofit.service.UsuarioService;
@@ -29,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private FirebaseAuth firebaseAuth;
     private Usuario usuario;
     private ListView lvMenuPrincipal;
@@ -42,27 +44,24 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
         firebaseAuth = FirebaseInicializador.getFirebaseAuth();
         lvMenuPrincipal = (ListView) findViewById(R.id.lv_menu_principal);
         lvMenuPrincipal.setOnItemClickListener(this);
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Buscando informações usuário");
-        progressDialog.show();
 
         Call call = new RetrofitInicializador().getRetrofit().create(UsuarioService.class).buscarPorUid(firebaseAuth.getCurrentUser().getUid());
-        call.enqueue(new Callback() {
+        RetrofitCallback callback = new RetrofitCallback(this, getString(R.string.buscando_informacoes_usuario), getString(R.string.erro_buscar_informacoes_usuario)) {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response.code() == javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
                     usuario = (Usuario) response.body();
                     carregarMenuPrincipal();
-                    progressDialog.dismiss();
                 }
+                super.onResponse(call, response);
             }
 
             @Override
             public void onFailure(Call call, Throwable t) {
-                Log.e("", "onFailure: ", t.getCause());
-                progressDialog.dismiss();
+                super.onFailure(call, t);
             }
-        });
+        };
+        call.enqueue(callback);
     }
 
     @Override
@@ -85,9 +84,10 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
 
     public void carregarMenuPrincipal() {
         menus = new ArrayList<>();
-        SharedPreferences.Editor preferences = getSharedPreferences("informacoes_usuario",MODE_PRIVATE).edit();
-        preferences.putString("nome",usuario.getNome());
-        preferences.putString("tipoUsuario",usuario.getTipoUsuario().getDescricao());
+        SharedPreferences.Editor preferences = getSharedPreferences("informacoes_usuario", MODE_PRIVATE).edit();
+        preferences.putString("uidUsuario",usuario.getUid());
+        preferences.putString("nome", usuario.getNome());
+        preferences.putString("tipoUsuario", usuario.getTipoUsuario().getDescricao());
         preferences.commit();
         if (usuario.getTipoUsuario().equals(TipoUsuario.CONTRATANTE)) {
             menus.add("Cadastrar nova vaga");
@@ -110,26 +110,54 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
 
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, menus);
+        MenuPrincipalAdapter adapter = new MenuPrincipalAdapter(this,menus);
         lvMenuPrincipal.setAdapter(adapter);
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-        if(usuario.getTipoUsuario().equals(TipoUsuario.PRESTADOR)) {
-            if (position == 5) {
+        if (usuario.getTipoUsuario().equals(TipoUsuario.PRESTADOR)) {
+            if(position == 0) {
+                Intent intent = new Intent(PrincipalUi.this,CadastrarDisponibilidadeUi.class);
+                intent.putExtra("uidUsuario", usuario.getUid());
+                startActivity(intent);
+            }
+            else if(position == 1) {
+                Intent intent = new Intent(PrincipalUi.this,CadastrarTipoAtividadeUi.class);
+                startActivity(intent);
+            }
+            else if(position == 2) {
+                Intent intent = new Intent(PrincipalUi.this,ConsultarVagasUi.class);
+                startActivity(intent);
+            }
+            else if(position == 3) {
+                Intent intent = new Intent(PrincipalUi.this,VisualizarVagasVinculadasUi.class);
+                startActivity(intent);
+            }
+            else if(position == 4) {
+                Intent intent = new Intent(PrincipalUi.this,ConsultarDisponibilidade.class) ;
+                startActivity(intent);
+            }
+            else if (position == 5) {
                 Intent intent = new Intent(PrincipalUi.this, MensagensUi.class);
                 startActivity(intent);
             }
-        }
-        else{
-            if(position == 0) {
-                Intent intent = new Intent(PrincipalUi.this,CadastrarVagaUi.class);
-                intent.putExtra("uidUsuario",usuario.getUid());
+        } else {
+            if (position == 0) {
+                Intent intent = new Intent(PrincipalUi.this, CadastrarVagaUi.class);
+                intent.putExtra("uidUsuario", usuario.getUid());
                 startActivity(intent);
             }
-
+            else if(position == 1) {
+                Intent intent = new Intent(PrincipalUi.this,CadastrarTipoAtividadeUi.class);
+                startActivity(intent);
+            }else if(position == 2) {
+                Intent intent = new Intent(PrincipalUi.this,AprovacaoVagasUi.class);
+                startActivity(intent);
+            } else if(position == 3) {
+                Intent intent = new Intent(PrincipalUi.this,ConsultarDisponibilidadePrestadorUi.class);
+                startActivity(intent);
+            }
             else if (position == 5) {
                 Intent intent = new Intent(PrincipalUi.this, MensagensUi.class);
                 startActivity(intent);

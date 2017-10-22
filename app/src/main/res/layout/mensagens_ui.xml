@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.contratediarista.br.contratediarista.ui.MensagensUi"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.contratediarista.br.contratediarista.ui.MensagensUi">
 
     <com.contratediarista.br.contratediarista.helper.SlidingTabLayout
         android:id="@+id/stl_tabs"
@@ -18,7 +18,7 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_paginas"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1">
 
     </android.support.v4.view.ViewPager>

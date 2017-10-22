@@ -2,13 +2,15 @@ package com.contratediarista.br.contratediarista.entity;
 
 import com.contratediarista.br.contratediarista.enuns.TipoUsuario;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by manga on 13/10/2017.
  */
 
-public class Usuario {
+public class Usuario implements Serializable{
     private String uid;
     private String nome;
     private String cpf;
@@ -16,7 +18,7 @@ public class Usuario {
     private Endereco endereco;
     private Date dataNascimento;
     private String telefone;
-    //private List<Avaliacao> avaliacoes;
+    private List<Avaliacao> avaliacoes;
 
 
     public String getUid() {
@@ -75,6 +77,14 @@ public class Usuario {
         this.telefone = telefone;
     }
 
+    public List<Avaliacao> getAvaliacoes() {
+        return avaliacoes;
+    }
+
+    public void setAvaliacoes(List<Avaliacao> avaliacoes) {
+        this.avaliacoes = avaliacoes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,6 +94,22 @@ public class Usuario {
 
         return uid.equals(usuario.uid);
 
+    }
+
+    public Float getMediaAprovacaoUsuario() {
+        if (avaliacoes != null && !avaliacoes.isEmpty()) {
+            int av = 0;
+            for (Avaliacao avaliacao : avaliacoes) {
+                av = av + avaliacao.getNota();
+            }
+            return (float) (av / avaliacoes.size());
+        } else {
+            return (float) 0;
+        }
+    }
+
+    public int getQuantidadeAvaliacoesUsuario() {
+        return (avaliacoes != null && !avaliacoes.isEmpty()) ? avaliacoes.size() : 0;
     }
 
     @Override
