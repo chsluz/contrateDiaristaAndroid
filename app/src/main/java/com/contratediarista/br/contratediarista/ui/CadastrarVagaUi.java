@@ -2,7 +2,6 @@ package com.contratediarista.br.contratediarista.ui;
 
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
-import android.icu.util.Calendar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +25,7 @@ import com.google.gson.JsonObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -64,14 +64,21 @@ public class CadastrarVagaUi extends AppCompatActivity {
         etDataFinal = (EditText) findViewById(R.id.et_data_final);
         etValorPeriodo = (EditText) findViewById(R.id.et_valor_periodo);
 
+        dataInicial = new Date();
+        dataFinal = new Date();
+
+        etDataInicial.setText(sdf.format(dataInicial));
+        etDataFinal.setText(sdf.format(dataFinal));
+
+
         final DatePickerDialog.OnDateSetListener dateInicial = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 try {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.YEAR,year);
-                    calendar.set(Calendar.MONTH,month);
-                    calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                    java.util.Calendar calendar = java.util.Calendar.getInstance();
+                    calendar.set(java.util.Calendar.YEAR,year);
+                    calendar.set(java.util.Calendar.MONTH,month);
+                    calendar.set(java.util.Calendar.DAY_OF_MONTH,dayOfMonth);
                     dataInicial = calendar.getTime();
                     etDataInicial.setText(sdf.format(dataInicial));
                 }catch (Exception e) {
@@ -143,11 +150,6 @@ public class CadastrarVagaUi extends AppCompatActivity {
         checkSex = (CheckBox) findViewById(R.id.check_sex);
         checkSab = (CheckBox) findViewById(R.id.check_sab);
 
-        dataInicial = new Date();
-        dataFinal = new Date();
-
-        etDataInicial.setText(sdf.format(dataInicial));
-        etDataFinal.setText(sdf.format(dataFinal));
 
         Bundle extra = getIntent().getExtras();
         if(extra != null) {

@@ -46,6 +46,7 @@ public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCa
     private String uidUsuario;
     SharedPreferences sharedPreferences;
     private boolean jaCandidato;
+    private boolean contratante;
 
 
     @Override
@@ -61,11 +62,16 @@ public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCa
 
         if(extra != null) {
             rotina = gson.fromJson(extra.get("rotina").toString(),Rotina.class);
+            contratante = extra.getBoolean("contratante");
         }
         if(rotina != null) {
             double lat = rotina.getVaga().getEndereco().getLatitude();
             double lng = rotina.getVaga().getEndereco().getLongitude();
             latLng = new LatLng(lat,lng);
+        }
+        if(contratante) {
+            btnCandidatar.setVisibility(View.GONE);
+            tvJaCandidatou.setVisibility(View.GONE);
         }
         jaCandidato = verificarJaCandidato();
         if(jaCandidato) {

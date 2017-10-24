@@ -14,7 +14,6 @@ import com.contratediarista.br.contratediarista.entity.Rotina;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitCallback;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitInicializador;
 import com.contratediarista.br.contratediarista.retrofit.service.RotinaService;
-import com.google.android.gms.internal.lv;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -26,22 +25,24 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class VisualizarVagasVinculadasUi extends AppCompatActivity {
+public class VisualizarVagasAprovadasUi extends AppCompatActivity {
     SimpleDateFormat formatJson = new SimpleDateFormat("yyyy-MM-dd");
-    Date dataInicial;
-    Date dataFinal;
-    private String uidUsuario;
-    SharedPreferences sharedPreferences;
     private ListView lvVagas;
     private List<Rotina> rotinas;
+    private Date dataInicial;
+    private Date dataFinal;
+    private String uidUsuario;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.visualizar_vagas_vinculadas_ui);
-        sharedPreferences = getSharedPreferences("informacoes_usuario", MODE_PRIVATE);
-        uidUsuario = sharedPreferences.getString("uidUsuario", "");
+        setContentView(R.layout.visualizar_vagas_aprovadas_ui);
+
         lvVagas = (ListView) findViewById(R.id.lv_vagas);
+        sharedPreferences = getSharedPreferences("informacoes_usuario",MODE_PRIVATE);
+        uidUsuario = sharedPreferences.getString("uidUsuario","");
+
         rotinas = new ArrayList<>();
         Calendar calendarInicial = Calendar.getInstance();
         calendarInicial.add(Calendar.MONTH, -2);
@@ -50,8 +51,8 @@ public class VisualizarVagasVinculadasUi extends AppCompatActivity {
         dataInicial = calendarInicial.getTime();
         dataFinal = calendar.getTime();
 
-        Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).buscarVagasUsuarioPrestador(uidUsuario, formatJson.format(dataInicial), formatJson.format(dataFinal));
-        RetrofitCallback callback = new RetrofitCallback(VisualizarVagasVinculadasUi.this, getString(R.string.buscando_vagas), getString(R.string.erro_buscar_vagas)) {
+        Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).buscarRotinasVinculadasContratante(uidUsuario, formatJson.format(dataInicial), formatJson.format(dataFinal));
+        RetrofitCallback callback = new RetrofitCallback(VisualizarVagasAprovadasUi.this, getString(R.string.buscando_vagas), getString(R.string.erro_buscar_vagas)) {
             @Override
             public void onResponse(Call call, Response response) {
                 if(response.code() == 200) {
@@ -74,19 +75,19 @@ public class VisualizarVagasVinculadasUi extends AppCompatActivity {
                 Rotina rotina = rotinas.get(position);
                 Date data = new Date();
                 if(rotina.getData().before(data)) {
-                    Intent intent = new Intent(VisualizarVagasVinculadasUi.this,AvaliacaoContratanteUi.class);
+                    Intent intent = new Intent(VisualizarVagasAprovadasUi.this,AvaliacaoContratanteUi.class);
                     Gson gson = new Gson();
                     String json = gson.toJson(rotina);
                     intent.putExtra("rotina",json);
-                    intent.putExtra("contratante",false);
+                    intent.putExtra("contratante",true);
                     startActivity(intent);
                 }
                 else {
-                    Intent intent = new Intent(VisualizarVagasVinculadasUi.this,VisualizacaoVagaUi.class);
+                    Intent intent = new Intent(VisualizarVagasAprovadasUi.this,VisualizacaoVagaUi.class);
                     Gson gson = new Gson();
                     String json = gson.toJson(rotina);
                     intent.putExtra("rotina",json);
-                    intent.putExtra("contratante",false);
+                    intent.putExtra("contratante",true);
                     startActivity(intent);
                 }
             }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.contratediarista.br.contratediarista.R;
 import com.contratediarista.br.contratediarista.adapter.MenuPrincipalAdapter;
@@ -22,6 +23,7 @@ import com.contratediarista.br.contratediarista.retrofit.RetrofitCallback;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitInicializador;
 import com.contratediarista.br.contratediarista.retrofit.firebase.FirebaseInicializador;
 import com.contratediarista.br.contratediarista.retrofit.service.UsuarioService;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -49,16 +51,21 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
         RetrofitCallback callback = new RetrofitCallback(this, getString(R.string.buscando_informacoes_usuario), getString(R.string.erro_buscar_informacoes_usuario)) {
             @Override
             public void onResponse(Call call, Response response) {
+                super.onResponse(call, response);
                 if (response.code() == javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
                     usuario = (Usuario) response.body();
                     carregarMenuPrincipal();
                 }
-                super.onResponse(call, response);
+                if(response.code() == 204) {
+                    onBackPressed();
+                    Toast.makeText(PrincipalUi.this,"Usuário não cadastrado no sistema",Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(Call call, Throwable t) {
                 super.onFailure(call, t);
+                onBackPressed();
             }
         };
         call.enqueue(callback);
@@ -75,6 +82,7 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.sair) {
             firebaseAuth.signOut();
+            LoginManager.getInstance().logOut();
             Intent intent = new Intent(PrincipalUi.this, LoginUi.class);
             startActivity(intent);
             return true;
@@ -156,6 +164,9 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
                 startActivity(intent);
             } else if(position == 3) {
                 Intent intent = new Intent(PrincipalUi.this,ConsultarDisponibilidadePrestadorUi.class);
+                startActivity(intent);
+            } else if(position == 4) {
+                Intent intent = new Intent(PrincipalUi.this,VisualizarVagasAprovadasUi.class);
                 startActivity(intent);
             }
             else if (position == 5) {

@@ -17,14 +17,23 @@ import android.widget.Toast;
 import com.contratediarista.br.contratediarista.R;
 import com.contratediarista.br.contratediarista.helper.Permissao;
 import com.contratediarista.br.contratediarista.retrofit.firebase.FirebaseInicializador;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginUi extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
@@ -32,6 +41,7 @@ public class LoginUi extends AppCompatActivity {
     private EditText etSenha;
     private Button btnLogar;
     private String chaveUsuarioLogado;
+    CallbackManager mCallbackManager;
     private String[] permissoes = new String[]{
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
@@ -46,6 +56,30 @@ public class LoginUi extends AppCompatActivity {
         etSenha = (EditText) findViewById(R.id.et_senha);
         btnLogar = (Button) findViewById(R.id.btn_logar);
 
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("email", "public_profile");
+        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("Success", "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("CANCEL", "facebook:onCancel");
+                // ...
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d("ERRO", "facebook:onError", error);
+                // ...
+            }
+        });
+
+
         if (firebaseAuth.getCurrentUser() != null) {
             Intent iPrincipal = new Intent(LoginUi.this, PrincipalUi.class);
             startActivity(iPrincipal);
@@ -56,6 +90,44 @@ public class LoginUi extends AppCompatActivity {
                 logarUsuario(v);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Pass the activity result back to the Facebook SDK
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d("Token", "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("Sucsess", "signInWithCredential:success");
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            if (firebaseAuth.getCurrentUser() != null) {
+                                Intent iPrincipal = new Intent(LoginUi.this, PrincipalUi.class);
+                                startActivity(iPrincipal);
+                            }
+                            //updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("Erro", "signInWithCredential:failure", task.getException());
+                            Toast.makeText(LoginUi.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            //updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
     }
 
     public void logarUsuario(View view) {

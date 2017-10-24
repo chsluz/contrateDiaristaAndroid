@@ -3,6 +3,8 @@
     <string name="login">login</string>
     <string name="senha">senha</string>
     <string name="logar">logar</string>
+    <string name="facebook_app_id">1900732833582088</string>
+    <string name="fb_login_protocol_scheme">fb1900732833582088</string>
     <string name="preencha_login_senha">Preencha campos login e senha</string>
     <string name="sair">Sair</string>
     <string name="ERROR_WRONG_PASSWORD">Senha inválida</string>

@@ -114,8 +114,10 @@ public class ListarDisponibilidadePrestadorUi extends AppCompatActivity {
                 }
                 else if(response.code() == 204) {
                     Toast.makeText(ListarDisponibilidadePrestadorUi.this,"Nenhuma disponibilidade encontrada",Toast.LENGTH_SHORT).show();
+                    onBackPressed();
                 }
                 else  {
+                    Toast.makeText(ListarDisponibilidadePrestadorUi.this,"Erro ao buscar diponibilidades",Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }
             }

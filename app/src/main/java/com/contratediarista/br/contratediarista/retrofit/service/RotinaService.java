@@ -23,6 +23,10 @@ public interface RotinaService  {
     @POST("rotina/buscar-rotina-por-usuario-data/{uid}/{dataInicial}/{dataFinal}")
     Call <List<Rotina>> buscarRotinaPorUsuarioEData(@Path("uid") String uid,@Path("dataInicial") String dataInicial,@Path("dataFinal") String dataFinal);
 
+    @POST("rotina/buscar-rotinas-vinculadas/{uid}/{dataInicial}/{dataFinal}")
+    Call<List<Rotina>> buscarRotinasVinculadasContratante(@Path("uid") String uid,@Path("dataInicial") String dataInicial,@Path("dataFinal") String dataFinal);
+
+
     @POST("rotina/excluir-rotina/{id}")
     Call<Void> excluirRotina(@Path("id") int id);
 

@@ -61,26 +61,26 @@ public class AprovacaoVagasAdapter extends BaseAdapter {
         TextView tvData = new TextView(activity);
         tvData.setText("Data: " + sdf.format(rotina.getData()));
         tvData.setLayoutParams(params);
-        tvData.setTextSize(10*scaleSp);
+        tvData.setTextSize(8*scaleSp);
         linear.addView(tvData);
 
         TextView tvPeriodo = new TextView(activity);
         tvPeriodo.setText("Período: " + rotina.getVaga().getTipoPeriodo().getDescricao());
         tvPeriodo.setLayoutParams(params);
-        tvPeriodo.setTextSize(10*scaleSp);
+        tvPeriodo.setTextSize(8*scaleSp);
         linear.addView(tvPeriodo);
 
         TextView tvValor = new TextView(activity);
         tvValor.setText("Valor: " + rotina.getVaga().getValorPeriodo() +" R$");
         tvValor.setLayoutParams(params);
-        tvValor.setTextSize(10*scaleSp);
+        tvValor.setTextSize(8*scaleSp);
         linear.addView(tvValor);
 
         for(TipoAtividade tipo : rotina.getVaga().getTiposAtividade()) {
             TextView tvAtividade = new TextView(activity);
             tvAtividade.setText("Atividade: " + tipo.getDescricao());
             tvAtividade.setLayoutParams(params);
-            tvAtividade.setTextSize(9*scaleSp);
+            tvAtividade.setTextSize(7*scaleSp);
             linear.addView(tvAtividade);
         }
 

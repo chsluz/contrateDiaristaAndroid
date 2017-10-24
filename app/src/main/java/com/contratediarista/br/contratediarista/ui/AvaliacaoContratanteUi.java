@@ -35,6 +35,7 @@ public class AvaliacaoContratanteUi extends AppCompatActivity {
     private EditText etNota;
     private EditText etObservacao;
     private Button btnAvaliar;
+    private boolean contratante;
 
 
     @Override
@@ -46,6 +47,7 @@ public class AvaliacaoContratanteUi extends AppCompatActivity {
         Bundle extra = getIntent().getExtras();
         if(extra != null) {
             rotina = gson.fromJson(extra.get("rotina").toString(),Rotina.class);
+            contratante = extra.getBoolean("contratante");
         }
         tvNome = (TextView) findViewById(R.id.tv_nome_contratante);
         tvData = (TextView) findViewById(R.id.tv_data);
@@ -53,7 +55,12 @@ public class AvaliacaoContratanteUi extends AppCompatActivity {
         etObservacao = (EditText) findViewById(R.id.et_observacao);
         btnAvaliar = (Button) findViewById(R.id.btn_avaliar);
 
-        tvNome.setText("Nome: "+rotina.getVaga().getContratante().getNome());
+        if(contratante) {
+            tvNome.setText("Nome: " + rotina.getVaga().getContratante().getNome());
+        }
+        else {
+            tvNome.setText("Nome: " + rotina.getPrestadorSelecionado().getNome());
+        }
         tvData.setText("Data: "+ sdf.format(rotina.getData()));
 
 
@@ -66,9 +73,20 @@ public class AvaliacaoContratanteUi extends AppCompatActivity {
                 else {
                     int nota = Integer.parseInt(etNota.getText().toString());
                     String dataJson = formatJson.format(rotina.getData());
+                    String uidUsuarioAvaliador;
+                    String uidUsuarioAvaliado;
+                    if(contratante) {
+                        uidUsuarioAvaliador = uidUsuario;
+                        uidUsuarioAvaliado = rotina.getPrestadorSelecionado().getUid();
+                    }
+                    else {
+                        uidUsuarioAvaliador = uidUsuario;
+                        uidUsuarioAvaliado = rotina.getVaga().getContratante().getUid();
+
+                    }
                     Call call = new RetrofitInicializador().getRetrofit()
                             .create(AvaliacaoService.class)
-                            .avaliarUsuario(uidUsuario,rotina.getVaga().getContratante().getUid(),
+                            .avaliarUsuario(uidUsuarioAvaliador,uidUsuarioAvaliado,
                                     nota,dataJson,etObservacao.getText().toString());
                     RetrofitCallback callback = new RetrofitCallback(AvaliacaoContratanteUi.this,"Salvando Avaliação","Erro ao salvar avaliação"){
                         @Override
