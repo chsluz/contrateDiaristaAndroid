@@ -52,21 +52,21 @@ public class VagasUi extends AppCompatActivity {
 
                     super.onResponse(call, response);
 
-                    if(response.code() == 201) {
+                    if(response.code() == 204) {
+                        onBackPressed();
                         Toast.makeText(VagasUi.this,getString(R.string.nenhum_resultado_encontrado),Toast.LENGTH_SHORT).show();
-                        voltarTelaAnterior();
                     }
-                    else if(response.code() != 200 && response.code() != 201) {
+                    else if(response.code() != 200 && response.code() != 204) {
+                        onBackPressed();
                         Toast.makeText(VagasUi.this,getString(R.string.erro_ao_pesquisar),Toast.LENGTH_SHORT).show();
-                        voltarTelaAnterior();
                     }
                 }
 
                 @Override
                 public void onFailure(Call call, Throwable t) {
                     super.onFailure(call, t);
+                    onBackPressed();
                     Toast.makeText(VagasUi.this,getString(R.string.erro_ao_pesquisar),Toast.LENGTH_SHORT).show();
-                    voltarTelaAnterior();
                 }
             };
             call.enqueue(callback);
@@ -89,11 +89,6 @@ public class VagasUi extends AppCompatActivity {
     public void carregarListaVagas() {
         VagaAdapter adapter = new VagaAdapter(this,rotinas);
         lvVagas.setAdapter(adapter);
-    }
-
-    public void voltarTelaAnterior() {
-        Intent intent = new Intent(VagasUi.this,ConsultarVagasUi.class);
-        startActivity(intent);
     }
 
 }

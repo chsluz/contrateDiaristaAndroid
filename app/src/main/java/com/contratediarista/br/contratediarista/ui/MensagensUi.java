@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import com.contratediarista.br.contratediarista.R;
 import com.contratediarista.br.contratediarista.adapter.TabAdapter;
 import com.contratediarista.br.contratediarista.helper.SlidingTabLayout;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -46,6 +47,7 @@ public class MensagensUi extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.sair) {
             firebaseAuth.signOut();
+            LoginManager.getInstance().logOut();
             Intent intent = new Intent(MensagensUi.this, LoginUi.class);
             startActivity(intent);
             return true;

@@ -57,7 +57,7 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
                     carregarMenuPrincipal();
                 }
                 if(response.code() == 204) {
-                    onBackPressed();
+                    PrincipalUi.super.onBackPressed();
                     Toast.makeText(PrincipalUi.this,"Usuário não cadastrado no sistema",Toast.LENGTH_SHORT).show();
                 }
             }
@@ -65,7 +65,7 @@ public class PrincipalUi extends AppCompatActivity implements AdapterView.OnItem
             @Override
             public void onFailure(Call call, Throwable t) {
                 super.onFailure(call, t);
-                onBackPressed();
+                PrincipalUi.super.onBackPressed();
             }
         };
         call.enqueue(callback);

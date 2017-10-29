@@ -23,7 +23,7 @@ public class RetrofitInicializador {
                         .readTimeout(1,TimeUnit.MINUTES)
                         .writeTimeout(1,TimeUnit.MINUTES).build();
                 retrofit = new Retrofit.Builder()
-                        .baseUrl("http://192.168.1.12:8080/ContrateDiarista/api/")
+                        .baseUrl("http://192.168.43.72:8080/ContrateDiarista/api/")
                         .addConverterFactory(GsonConverterFactory.create())
                         .client(cliente)
                         .build();

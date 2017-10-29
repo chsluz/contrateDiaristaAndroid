@@ -124,7 +124,7 @@ public class VisualizarAprovacaoVagaUi extends AppCompatActivity {
                     rotinas =  (List<Rotina>) response.body();
                     mostrarLista();
                 }
-                else if(response.code() == 201) {
+                else if(response.code() == 204) {
                     Toast.makeText(VisualizarAprovacaoVagaUi.this,getString(R.string.nenhum_resultado_encontrado),Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }
