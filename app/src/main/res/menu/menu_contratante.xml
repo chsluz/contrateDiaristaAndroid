@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_cadastrar_vaga" android:title="@string/cadastrar_vaga"/>
+    <item android:id="@+id/menu_aprovacao_vaga" android:title="@string/aprovacao_vagas"/>
+    <item
+        android:id="@+id/sair"
+        android:orderInCategory="100"
+        android:title="@string/sair"></item>
+</menu>

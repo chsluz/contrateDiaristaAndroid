@@ -2,10 +2,17 @@ package com.contratediarista.br.contratediarista.ui;
 
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -15,11 +22,13 @@ import android.widget.Toast;
 
 import com.contratediarista.br.contratediarista.R;
 import com.contratediarista.br.contratediarista.adapter.SpinnerTipoPeriodoAdapter;
+import com.contratediarista.br.contratediarista.entity.Usuario;
 import com.contratediarista.br.contratediarista.enuns.DiasSemana;
 import com.contratediarista.br.contratediarista.enuns.TipoPeriodo;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitCallback;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitInicializador;
 import com.contratediarista.br.contratediarista.retrofit.service.VagaService;
+import com.google.android.gms.internal.bt;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -36,7 +45,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 @TargetApi(24)
-public class CadastrarVagaUi extends AppCompatActivity {
+public class CadastrarVagaUi extends Fragment {
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat formatoJson = new SimpleDateFormat("yyyy-MM-dd");
     String uidUsuario = "";
@@ -51,24 +60,29 @@ public class CadastrarVagaUi extends AppCompatActivity {
     private CheckBox checkSex;
     private CheckBox checkSab;
     private TipoPeriodo tipoPeriodo;
+    private Button btnCadastrar;
     private Date dataInicial;
     private Date dataFinal;
     private List<TipoPeriodo> tiposPeriodo;
     DatePickerDialog.OnDateSetListener onDateSetListener;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cadastrar_vaga_ui);
+    private SharedPreferences sharedPreferences;
 
-        etDataInicial = (EditText) findViewById(R.id.et_data_inicial);
-        etDataFinal = (EditText) findViewById(R.id.et_data_final);
-        etValorPeriodo = (EditText) findViewById(R.id.et_valor_periodo);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        sharedPreferences = getActivity().getSharedPreferences("informacoes_usuario", Context.MODE_PRIVATE);
+        uidUsuario = sharedPreferences.getString("uidUsuario","");
+        View view = inflater.inflate(R.layout.activity_cadastrar_vaga_ui, container, false);
+        etDataInicial = (EditText) view.findViewById(R.id.et_data_inicial);
+        etDataFinal = (EditText) view.findViewById(R.id.et_data_final);
+        etValorPeriodo = (EditText) view.findViewById(R.id.et_valor_periodo);
 
         dataInicial = new Date();
         dataFinal = new Date();
 
         etDataInicial.setText(sdf.format(dataInicial));
         etDataFinal.setText(sdf.format(dataFinal));
+        btnCadastrar = (Button) view.findViewById(R.id.btn_cadastrar);
 
 
         final DatePickerDialog.OnDateSetListener dateInicial = new DatePickerDialog.OnDateSetListener() {
@@ -110,7 +124,7 @@ public class CadastrarVagaUi extends AppCompatActivity {
                 int year = calendario.get(Calendar.YEAR);
                 int month = calendario.get(Calendar.MONTH);
                 int day = calendario.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(CadastrarVagaUi.this,dateInicial,year,month,day);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),dateInicial,year,month,day);
                 dialog.show();
             }
         });
@@ -122,14 +136,14 @@ public class CadastrarVagaUi extends AppCompatActivity {
                 int year = calendario.get(Calendar.YEAR);
                 int month = calendario.get(Calendar.MONTH);
                 int day = calendario.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(CadastrarVagaUi.this,dateFinal,year,month,day);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),dateFinal,year,month,day);
                 dialog.show();
             }
         });
 
         tiposPeriodo = Arrays.asList(TipoPeriodo.values());
-        spTipoPeriodo = (Spinner) findViewById(R.id.sp_tipo_periodo);
-        SpinnerTipoPeriodoAdapter adapter = new SpinnerTipoPeriodoAdapter(this,tiposPeriodo);
+        spTipoPeriodo = (Spinner) view.findViewById(R.id.sp_tipo_periodo);
+        SpinnerTipoPeriodoAdapter adapter = new SpinnerTipoPeriodoAdapter(getActivity(),tiposPeriodo);
         spTipoPeriodo.setAdapter(adapter);
         spTipoPeriodo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -143,22 +157,37 @@ public class CadastrarVagaUi extends AppCompatActivity {
             }
         });
 
-        checkSeg = (CheckBox) findViewById(R.id.check_seg);
-        checkTer = (CheckBox) findViewById(R.id.check_ter);
-        checkQua = (CheckBox) findViewById(R.id.check_qua);
-        checkQui = (CheckBox) findViewById(R.id.check_qui);
-        checkSex = (CheckBox) findViewById(R.id.check_sex);
-        checkSab = (CheckBox) findViewById(R.id.check_sab);
+        checkSeg = (CheckBox) view.findViewById(R.id.check_seg);
+        checkTer = (CheckBox) view.findViewById(R.id.check_ter);
+        checkQua = (CheckBox) view.findViewById(R.id.check_qua);
+        checkQui = (CheckBox) view.findViewById(R.id.check_qui);
+        checkSex = (CheckBox) view.findViewById(R.id.check_sex);
+        checkSab = (CheckBox) view.findViewById(R.id.check_sab);
 
-
-        Bundle extra = getIntent().getExtras();
-        if(extra != null) {
-            uidUsuario = extra.get("uidUsuario").toString();
-        }
-
+        btnCadastrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cadastrarVaga();
+            }
+        });
+        return view;
     }
 
-    public void cadastrarVaga(View v) {
+    public void instanciarNovo() {
+        dataInicial = new Date();
+        dataFinal = new Date();
+        tipoPeriodo = null;
+        etValorPeriodo.setText("");
+        checkSeg.setSelected(false);
+        checkTer.setSelected(false);
+        checkQua.setSelected(false);
+        checkQui.setSelected(false);
+        checkSex.setSelected(false);
+        checkSab.setSelected(false);
+    }
+
+
+    public void cadastrarVaga() {
         boolean validacao = true;
         boolean seg = checkSeg.isChecked();
         boolean ter = checkTer.isChecked();
@@ -167,19 +196,19 @@ public class CadastrarVagaUi extends AppCompatActivity {
         boolean sex = checkSex.isChecked();
         boolean sab = checkSab.isChecked();
         if(uidUsuario.isEmpty()) {
-            Toast.makeText(this,"Usuário não encontrado",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"Usuário não encontrado",Toast.LENGTH_SHORT).show();
             return;
         }
         if(etValorPeriodo.getText().equals("")) {
-            Toast.makeText(this,"Preencha o valor do período",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"Preencha o valor do período",Toast.LENGTH_SHORT).show();
             validacao = false;
         }
         if(tipoPeriodo == null) {
-            Toast.makeText(this,"Selecione um período",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"Selecione um período",Toast.LENGTH_SHORT).show();
             validacao = false;
         }
         if(!seg && !ter && !qua && !qui && !sex && !sab) {
-            Toast.makeText(this,"Selecione pelo menos um dia da semana",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"Selecione pelo menos um dia da semana",Toast.LENGTH_SHORT).show();
             validacao = false;
         }
 
@@ -227,11 +256,12 @@ public class CadastrarVagaUi extends AppCompatActivity {
             RequestBody body = RequestBody.create(MediaType.parse("json"),jsonObjet.toString());
 
             Call call = new RetrofitInicializador().getRetrofit().create(VagaService.class).cadastrarVaga(body);
-            Callback callback = new RetrofitCallback(this,getString(R.string.cadastrando_vaga),getString(R.string.erro_cadastrar_vaga)){
+            Callback callback = new RetrofitCallback(getActivity(),getString(R.string.cadastrando_vaga),getString(R.string.erro_cadastrar_vaga)){
                 @Override
                 public void onResponse(Call call, Response response) {
                     if(response.code() == javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
-                        Toast.makeText(CadastrarVagaUi.this,getApplicationContext().getString(R.string.vaga_cadastrado_sucesso),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),getActivity().getString(R.string.vaga_cadastrado_sucesso),Toast.LENGTH_SHORT).show();
+                        instanciarNovo();
                     }
                     super.onResponse(call, response);
                 }

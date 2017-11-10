@@ -48,41 +48,25 @@ public class AprovacaoVagasAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Rotina rotina = rotinas.get(position);
         LayoutInflater inflater = activity.getLayoutInflater();
-        View linha = inflater.inflate(R.layout.disponibilidade_ui_linha,null);
+        View linha = inflater.inflate(R.layout.aprovacao_vaga_ui_linha,null);
 
-        float scale = activity.getResources().getDisplayMetrics().density;
-        float scaleSp = activity.getResources().getDisplayMetrics().scaledDensity;
+        TextView tvDataVagaCadastrada = (TextView) linha.findViewById(R.id.tv_data_vaga_cadastrada);
+        tvDataVagaCadastrada.setText("Data: "+sdf.format(rotina.getData()));
 
-        LinearLayout linear = (LinearLayout) linha.findViewById(R.id.linear_disponibilidade);
+        TextView tvPeriodoCadastrado = (TextView) linha.findViewById(R.id.tv_periodo_vaga);
+        tvPeriodoCadastrado.setText("Período: "+rotina.getVaga().getTipoPeriodo().getDescricao());
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins((int) (scale * 10),(int) (scale*3),0,0);
+        TextView tvDiaSemana = (TextView) linha.findViewById(R.id.tv_dia_da_semana);
+        tvDiaSemana.setText("Dia: "+rotina.getDiaSemana().getDescricao());
 
-        TextView tvData = new TextView(activity);
-        tvData.setText("Data: " + sdf.format(rotina.getData()));
-        tvData.setLayoutParams(params);
-        tvData.setTextSize(8*scaleSp);
-        linear.addView(tvData);
+        TextView tvValor = (TextView) linha.findViewById(R.id.tv_valor_periodo);
+        tvValor.setText("Valor: "+rotina.getVaga().getValorPeriodo());
 
-        TextView tvPeriodo = new TextView(activity);
-        tvPeriodo.setText("Período: " + rotina.getVaga().getTipoPeriodo().getDescricao());
-        tvPeriodo.setLayoutParams(params);
-        tvPeriodo.setTextSize(8*scaleSp);
-        linear.addView(tvPeriodo);
+        TextView tvCandidatos = (TextView) linha.findViewById(R.id.tv_canditatos);
+        tvCandidatos.setText("Candidatos: "+ (!rotina.getPrestadores().isEmpty() ? "Sim" : "Não") );
 
-        TextView tvValor = new TextView(activity);
-        tvValor.setText("Valor: " + rotina.getVaga().getValorPeriodo() +" R$");
-        tvValor.setLayoutParams(params);
-        tvValor.setTextSize(8*scaleSp);
-        linear.addView(tvValor);
-
-        for(TipoAtividade tipo : rotina.getVaga().getTiposAtividade()) {
-            TextView tvAtividade = new TextView(activity);
-            tvAtividade.setText("Atividade: " + tipo.getDescricao());
-            tvAtividade.setLayoutParams(params);
-            tvAtividade.setTextSize(7*scaleSp);
-            linear.addView(tvAtividade);
-        }
+        TextView tvSelecionado = (TextView) linha.findViewById(R.id.tv_selecionado);
+        tvSelecionado.setText("Selecionado: "+ (rotina.getPrestadorSelecionado() != null ? "Sim" : "Não"));
 
         return linha;
     }

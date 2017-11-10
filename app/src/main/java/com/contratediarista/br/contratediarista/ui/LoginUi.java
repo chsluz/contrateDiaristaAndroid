@@ -1,6 +1,7 @@
 package com.contratediarista.br.contratediarista.ui;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +22,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.Login;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -81,8 +83,9 @@ public class LoginUi extends AppCompatActivity {
 
 
         if (firebaseAuth.getCurrentUser() != null) {
-            Intent iPrincipal = new Intent(LoginUi.this, PrincipalUi.class);
-            startActivity(iPrincipal);
+            Intent iMenu = new Intent(LoginUi.this,MenuDrawerUi.class);
+            //Intent iPrincipal = new Intent(LoginUi.this, PrincipalUi.class);
+            startActivity(iMenu);
         }
         btnLogar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,15 +142,24 @@ public class LoginUi extends AppCompatActivity {
         String email = etLogin.getText().toString();
         String senha = etSenha.getText().toString();
 
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
+        dialog.setMessage(getString(R.string.logando));
+        dialog.show();
+
+
         firebaseAuth.signInWithEmailAndPassword(email, senha)
                 .addOnCompleteListener(LoginUi.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Intent iPrincipal = new Intent(LoginUi.this, PrincipalUi.class);
-                            startActivity(iPrincipal);
+                            Intent iMenu = new Intent(LoginUi.this,MenuDrawerUi.class);
+                            //Intent iPrincipal = new Intent(LoginUi.this, PrincipalUi.class);
+                            startActivity(iMenu);
+                            dialog.dismiss();
                         } else {
                             exibirMsgErro(task.getException());
+                            dialog.dismiss();
                         }
                     }
                 })

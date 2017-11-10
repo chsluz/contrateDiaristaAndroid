@@ -94,4 +94,10 @@
     <string name="informacoes_usuario">Informações do usuário</string>
     <string name="consultar_disponibilidades_cadastradas">Consultar disponibilidades cadastradas</string>
     <string name="listar_disponibilidades">Listar disponibilidades</string>
+    <string name="title_activity_menu_drawer_ui">MenuDrawerUi</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="logando">logando...</string>
+    <string name="excluir">Excluir</string>
 </resources>

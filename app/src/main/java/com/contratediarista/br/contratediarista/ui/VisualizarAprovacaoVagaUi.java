@@ -1,23 +1,23 @@
 package com.contratediarista.br.contratediarista.ui;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.contratediarista.br.contratediarista.R;
 import com.contratediarista.br.contratediarista.adapter.AprovacaoVagasAdapter;
-import com.contratediarista.br.contratediarista.entity.Disponibilidade;
 import com.contratediarista.br.contratediarista.entity.Rotina;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitCallback;
 import com.contratediarista.br.contratediarista.retrofit.RetrofitInicializador;
-import com.contratediarista.br.contratediarista.retrofit.service.DisponibilidadeService;
 import com.contratediarista.br.contratediarista.retrofit.service.RotinaService;
 import com.google.gson.Gson;
 
@@ -27,7 +27,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class VisualizarAprovacaoVagaUi extends AppCompatActivity {
+public class VisualizarAprovacaoVagaUi extends Fragment {
     private String uidUsuario;
     private SharedPreferences sharedPreferences;
     private ListView lvAprovacaoVagas;
@@ -35,32 +35,36 @@ public class VisualizarAprovacaoVagaUi extends AppCompatActivity {
     private String dataFinal;
     private List<Rotina> rotinas;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.visualizar_aprovacao_vaga_ui);
-        sharedPreferences = getSharedPreferences("informacoes_usuario",MODE_PRIVATE);
-        uidUsuario = sharedPreferences.getString("uidUsuario","");
-        Bundle extra = getIntent().getExtras();
-        if(extra != null){
-            dataInicial = extra.get("dataInicial").toString();
-            dataFinal = extra.getString("dataFinal");
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.visualizar_aprovacao_vaga_ui, container, false);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            dataInicial = bundle.getString("dataInicial");
+            dataFinal = bundle.getString("dataFinal");
         }
-        lvAprovacaoVagas = (ListView) findViewById(R.id.lv_aprovacao_vagas);
+        sharedPreferences = getActivity().getSharedPreferences("informacoes_usuario", Context.MODE_PRIVATE);
+        uidUsuario = sharedPreferences.getString("uidUsuario","");
+        lvAprovacaoVagas = (ListView) view.findViewById(R.id.lv_aprovacao_vagas);
 
         lvAprovacaoVagas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Rotina rotina = rotinas.get(position);
                 if(rotina.getPrestadores()  == null || rotina.getPrestadores().isEmpty()) {
-                    Toast.makeText(VisualizarAprovacaoVagaUi.this,"Nenhum prestador se candidatou a essa vaga",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Nenhum prestador se candidatou a essa vaga",Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Intent intent = new Intent(VisualizarAprovacaoVagaUi.this,InformacoesAprovacaoUi.class);
+                    Bundle bundle = new Bundle();
                     Gson gson = new Gson();
                     String json = gson.toJson(rotina);
-                    intent.putExtra("rotina",json);
-                    startActivity(intent);
+                    bundle.putString("rotina",json);
+                    Fragment fragment = new InformacoesAprovacaoUi();
+                    fragment.setArguments(bundle);
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.container,fragment).commit();
                 }
             }
         });
@@ -69,7 +73,7 @@ public class VisualizarAprovacaoVagaUi extends AppCompatActivity {
         lvAprovacaoVagas.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                final Rotina rotina = rotinas.get(position);
+                /*final Rotina rotina = rotinas.get(position);
                 final ProgressDialog.Builder builder = new ProgressDialog.Builder(VisualizarAprovacaoVagaUi.this);
                 builder.setCancelable(false);
                 builder.setTitle("Excluir Vaga");
@@ -104,19 +108,19 @@ public class VisualizarAprovacaoVagaUi extends AppCompatActivity {
                     }
                 });
                 android.app.AlertDialog alert = builder.create();
-                alert.show();
+                alert.show();*/
                 return false;
             }
         });
 
         carregarListaVagasCadastradas();
+        return  view;
     }
-
 
     public void carregarListaVagasCadastradas() {
         rotinas = new ArrayList<>();
-        Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).buscarRotinaPorUsuarioEData(uidUsuario,dataInicial,dataFinal);
-        RetrofitCallback callback = new RetrofitCallback(VisualizarAprovacaoVagaUi.this,"Buscando vagas cadastradas","Erro ao buscar vagas cadastradas") {
+        Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).buscarRotinasParaAprovacao(uidUsuario,dataInicial,dataFinal);
+        RetrofitCallback callback = new RetrofitCallback(getActivity(),"Buscando vagas para aprovação","Erro ao buscar vagas cadastradas") {
             @Override
             public void onResponse(Call call, Response response) {
                 super.onResponse(call, response);
@@ -125,15 +129,15 @@ public class VisualizarAprovacaoVagaUi extends AppCompatActivity {
                     mostrarLista();
                 }
                 else if(response.code() == 204) {
-                    Toast.makeText(VisualizarAprovacaoVagaUi.this,getString(R.string.nenhum_resultado_encontrado),Toast.LENGTH_SHORT).show();
-                    onBackPressed();
+                    Toast.makeText(getActivity(),getString(R.string.nenhum_resultado_encontrado),Toast.LENGTH_SHORT).show();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,new AprovacaoVagasUi()).commit();
                 }
             }
 
             @Override
             public void onFailure(Call call, Throwable t) {
                 super.onFailure(call, t);
-                onBackPressed();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,new AprovacaoVagasUi()).commit();
             }
         };
         call.enqueue(callback);
@@ -141,7 +145,7 @@ public class VisualizarAprovacaoVagaUi extends AppCompatActivity {
 
 
     public void mostrarLista() {
-        AprovacaoVagasAdapter adapter = new AprovacaoVagasAdapter(this,rotinas);
+        AprovacaoVagasAdapter adapter = new AprovacaoVagasAdapter(getActivity(),rotinas);
         lvAprovacaoVagas.setAdapter(adapter);
     }
 }

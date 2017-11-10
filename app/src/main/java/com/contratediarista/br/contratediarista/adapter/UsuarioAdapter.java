@@ -46,7 +46,7 @@ public class UsuarioAdapter extends BaseAdapter {
         LayoutInflater inflater = activity.getLayoutInflater();
         View linha = inflater.inflate(R.layout.usuario_ui_linha,null);
         TextView tvNome = (TextView) linha.findViewById(R.id.tv_nome);
-        tvNome.setText("Nome :"+usuario.getNome());
+        tvNome.setText("Nome: "+usuario.getNome());
 
         TextView tvAvaliacao = (TextView) linha.findViewById(R.id.tv_avaliacao);
         tvAvaliacao.setText("Avaliação: " +usuario.getMediaAprovacaoUsuario());

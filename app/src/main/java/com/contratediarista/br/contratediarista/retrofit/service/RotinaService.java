@@ -17,6 +17,9 @@ public interface RotinaService  {
     @POST("rotina/candidatar-vaga/{uidUsuario}/{idRotina}")
     Call<Void> candidatarVaga(@Path("uidUsuario") String uidUsuario,@Path("idRotina") int idRotina);
 
+    @POST("rotina/buscar-rotinas-para-aprovacao/{uid}/{dataInicial}/{dataFinal}")
+    Call<List<Rotina>> buscarRotinasParaAprovacao(@Path("uid") String uid,@Path("dataInicial") String dataInicial,@Path("dataFinal") String dataFinal);
+
     @POST("rotina/buscar-vagas-usuario/{uid}/{dataInicial}/{dataFinal}")
     Call<List<Rotina>> buscarVagasUsuarioPrestador(@Path("uid") String uid, @Path("dataInicial") String dataInicial, @Path("dataFinal") String dataFinal);
 

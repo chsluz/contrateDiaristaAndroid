@@ -5,6 +5,7 @@ android {
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.contratediarista.br.contratediarista"
+        multiDexEnabled true
         minSdkVersion 20
         targetSdkVersion 25
         versionCode 1
@@ -31,34 +32,13 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.google.firebase:firebase-auth:11.0.4'
     compile 'com.google.firebase:firebase-database:11.0.4'
+    compile 'com.google.firebase:firebase-core:11.0.4'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.google.android.gms:play-services:11.0.4'
     compile 'com.android.support:design:25.3.1'
     compile 'com.facebook.android:facebook-login:[4,5)'
     testCompile 'junit:junit:4.12'
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -2,10 +2,12 @@ package com.contratediarista.br.contratediarista.ui;
 
 import android.location.Criteria;
 import android.location.LocationManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +30,7 @@ import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class InformacoesUsuarioUi extends FragmentActivity implements OnMapReadyCallback {
+public class InformacoesUsuarioUi extends Fragment implements OnMapReadyCallback {
     private LatLng latLng;
     private GoogleMap mMap;
     private Usuario usuario;
@@ -39,40 +41,40 @@ public class InformacoesUsuarioUi extends FragmentActivity implements OnMapReady
     private Button btnRemover;
     private Button btnAprovar;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.informacoes_usuario_ui);
-        Bundle extra = getIntent().getExtras();
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.informacoes_usuario_ui, container, false);
+        Bundle extra = this.getArguments();
         if(extra != null) {
             Gson gson = new Gson();
             usuario = gson.fromJson(extra.getString("usuario"),Usuario.class);
             rotina = gson.fromJson(extra.getString("rotina"),Rotina.class);
         }
 
-        tvNome = (TextView) findViewById(R.id.tv_nome);
+        tvNome = (TextView) view.findViewById(R.id.tv_nome);
         tvNome.setText("Nome: " +usuario.getNome());
-        tvAvaliacao = (TextView) findViewById(R.id.tv_avaliacao);
+        tvAvaliacao = (TextView) view.findViewById(R.id.tv_avaliacao);
         tvAvaliacao.setText("Avaliação: "+usuario.getMediaAprovacaoUsuario());
-        tvQtdeAvaliacao = (TextView) findViewById(R.id.tv_qtde_avaliacao);
+        tvQtdeAvaliacao = (TextView) view.findViewById(R.id.tv_qtde_avaliacao);
         tvQtdeAvaliacao.setText("Qtde Avaliação: " +usuario.getQuantidadeAvaliacoesUsuario());
-        btnRemover = (Button) findViewById(R.id.btn_remover);
-        btnAprovar = (Button) findViewById(R.id.btn_aprovar);
+        btnRemover = (Button) view.findViewById(R.id.btn_remover);
+        btnAprovar = (Button) view.findViewById(R.id.btn_aprovar);
 
         btnRemover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).removerListarPrestador(rotina.getId(),usuario.getUid());
-                RetrofitCallback callback = new RetrofitCallback(InformacoesUsuarioUi.this,"Removendo usuário da lista","Erro ao remover usuário da lista"){
+                RetrofitCallback callback = new RetrofitCallback(getActivity(),"Removendo usuário da lista","Erro ao remover usuário da lista"){
                     @Override
                     public void onResponse(Call call, Response response) {
                         super.onResponse(call, response);
                         if(response.code() == 200) {
-                            Toast.makeText(InformacoesUsuarioUi.this,"Removido com sucesso.",Toast.LENGTH_SHORT).show();
-                            onBackPressed();
+                            Toast.makeText(getActivity(),"Removido com sucesso.",Toast.LENGTH_SHORT).show();
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,new AprovacaoVagasUi()).commit();
                         }
                         else {
-                            Toast.makeText(InformacoesUsuarioUi.this,"Erro ao remover usuario da lista",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Erro ao remover usuario da lista",Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -89,16 +91,16 @@ public class InformacoesUsuarioUi extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v) {
                 Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).alterarPrestadorSelecionado(rotina.getId(),usuario.getUid());
-                RetrofitCallback callback = new RetrofitCallback(InformacoesUsuarioUi.this,"Aprovando usuário","Erro ao aprovar usuário") {
+                RetrofitCallback callback = new RetrofitCallback(getActivity(),"Aprovando usuário","Erro ao aprovar usuário") {
                     @Override
                     public void onResponse(Call call, Response response) {
                         super.onResponse(call, response);
                         if(response.code() == 200) {
-                            Toast.makeText(InformacoesUsuarioUi.this,"Usuário aprovado com sucesso.",Toast.LENGTH_SHORT).show();
-                            onBackPressed();
+                            Toast.makeText(getActivity(),"Usuário aprovado com sucesso.",Toast.LENGTH_SHORT).show();
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,new AprovacaoVagasUi()).commit();
                         }
                         else {
-                            Toast.makeText(InformacoesUsuarioUi.this,"Erro ao aprovar usuario",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Erro ao aprovar usuario",Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -112,10 +114,9 @@ public class InformacoesUsuarioUi extends FragmentActivity implements OnMapReady
         });
 
         latLng = new LatLng(usuario.getEndereco().getLatitude(),usuario.getEndereco().getLongitude());
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        return view;
     }
 
     @Override
@@ -129,7 +130,7 @@ public class InformacoesUsuarioUi extends FragmentActivity implements OnMapReady
 
 
     public void center() throws  SecurityException{
-        LocationManager locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         //location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, true));
         CameraPosition cameraPosition = new CameraPosition.Builder()

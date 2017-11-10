@@ -3,9 +3,14 @@ package com.contratediarista.br.contratediarista.ui;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.FloatRange;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -16,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class AprovacaoVagasUi extends AppCompatActivity {
+public class AprovacaoVagasUi extends Fragment {
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     private SimpleDateFormat formatoJson = new SimpleDateFormat("yyyy-MM-dd");
     private EditText etDataInicial;
@@ -25,13 +30,14 @@ public class AprovacaoVagasUi extends AppCompatActivity {
     private Date dataInicial;
     private Date dataFinal;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.aprovacao_vagas_ui);
-        etDataInicial = (EditText) findViewById(R.id.et_data_inicial);
-        etDataFinal = (EditText) findViewById(R.id.et_data_final);
-        btnBuscar = (Button) findViewById(R.id.btn_buscar);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.aprovacao_vagas_ui, container, false);
+
+        etDataInicial = (EditText) view.findViewById(R.id.et_data_inicial);
+        etDataFinal = (EditText) view.findViewById(R.id.et_data_final);
+        btnBuscar = (Button) view.findViewById(R.id.btn_buscar);
 
         dataInicial = new Date();
         dataFinal = new Date();
@@ -77,7 +83,7 @@ public class AprovacaoVagasUi extends AppCompatActivity {
                 int year = calendario.get(Calendar.YEAR);
                 int month = calendario.get(Calendar.MONTH);
                 int day = calendario.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(AprovacaoVagasUi.this,dateInicial,year,month,day);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),dateInicial,year,month,day);
                 dialog.show();
             }
         });
@@ -89,24 +95,25 @@ public class AprovacaoVagasUi extends AppCompatActivity {
                 int year = calendario.get(Calendar.YEAR);
                 int month = calendario.get(Calendar.MONTH);
                 int day = calendario.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(AprovacaoVagasUi.this,dateFinal,year,month,day);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),dateFinal,year,month,day);
                 dialog.show();
             }
         });
 
-
-
-
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent  = new Intent(AprovacaoVagasUi.this,VisualizarAprovacaoVagaUi.class);
-                intent.putExtra("dataInicial",formatoJson.format(dataInicial));
-                intent.putExtra("dataFinal",formatoJson.format(dataFinal));
-                startActivity(intent);
+                Fragment fragment = new VisualizarAprovacaoVagaUi();
+                Bundle bundle = new Bundle();
+                bundle.putString("dataInicial",formatoJson.format(dataInicial));
+                bundle.putString("dataFinal",formatoJson.format(dataFinal));
+                fragment.setArguments(bundle);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment).commit();
+
             }
         });
-
-
+        return view;
     }
+
+
 }

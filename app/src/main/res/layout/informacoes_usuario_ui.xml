@@ -1,69 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.contratediarista.br.contratediarista.ui.InformacoesUsuarioUi">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:orientation="vertical"
         android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/tv_nome"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="15dp"/>
-
-        <TextView
-            android:id="@+id/tv_avaliacao"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="15dp"/>
-
-        <TextView
-            android:id="@+id/tv_qtde_avaliacao"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="15dp"/>
-
-        <fragment
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:name="com.google.android.gms.maps.SupportMapFragment"/>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_remover"
+            <TextView
+                android:id="@+id/tv_nome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Nome: Prestador Teste"
+                android:textSize="16dp"/>
+
+            <TextView
+                android:id="@+id/tv_avaliacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Avaliação: 5"
+                android:layout_marginBottom="8dp"
+                android:textSize="16dp"/>
+
+            <TextView
+                android:id="@+id/tv_qtde_avaliacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Qtde Avaliação: 5"
+                android:textSize="16dp"/>
+
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="350dp" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/remover"
                 android:layout_gravity="right"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="16dp">
 
-            <Button
-                android:id="@+id/btn_aprovar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/aprovar"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="right"/>
+                <Button
+                    android:id="@+id/btn_remover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/remover" />
 
+                <Button
+                    android:id="@+id/btn_aprovar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/aprovar" />
+
+            </LinearLayout>
         </LinearLayout>
-
-
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
+</FrameLayout>
