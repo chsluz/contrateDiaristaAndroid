@@ -1,10 +1,15 @@
 package com.contratediarista.br.contratediarista.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -26,7 +31,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class VisualizarVagasVinculadasUi extends AppCompatActivity {
+public class VisualizarVagasVinculadasUi extends Fragment {
     SimpleDateFormat formatJson = new SimpleDateFormat("yyyy-MM-dd");
     Date dataInicial;
     Date dataFinal;
@@ -35,13 +40,13 @@ public class VisualizarVagasVinculadasUi extends AppCompatActivity {
     private ListView lvVagas;
     private List<Rotina> rotinas;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.visualizar_vagas_vinculadas_ui);
-        sharedPreferences = getSharedPreferences("informacoes_usuario", MODE_PRIVATE);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.visualizar_vagas_vinculadas_ui, container, false);
+        sharedPreferences = getActivity().getSharedPreferences("informacoes_usuario", Context.MODE_PRIVATE);
         uidUsuario = sharedPreferences.getString("uidUsuario", "");
-        lvVagas = (ListView) findViewById(R.id.lv_vagas);
+        lvVagas = (ListView) view.findViewById(R.id.lv_vagas);
         rotinas = new ArrayList<>();
         Calendar calendarInicial = Calendar.getInstance();
         calendarInicial.add(Calendar.MONTH, -2);
@@ -50,8 +55,11 @@ public class VisualizarVagasVinculadasUi extends AppCompatActivity {
         dataInicial = calendarInicial.getTime();
         dataFinal = calendar.getTime();
 
-        Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).buscarVagasUsuarioPrestador(uidUsuario, formatJson.format(dataInicial), formatJson.format(dataFinal));
-        RetrofitCallback callback = new RetrofitCallback(VisualizarVagasVinculadasUi.this, getString(R.string.buscando_vagas), getString(R.string.erro_buscar_vagas)) {
+        Call call = new RetrofitInicializador().getRetrofit()
+                .create(RotinaService.class).buscarVagasUsuarioPrestador(uidUsuario, formatJson.format(dataInicial), formatJson.format(dataFinal));
+        RetrofitCallback callback = new RetrofitCallback(getActivity(),
+                getString(R.string.buscando_vagas),
+                getString(R.string.erro_buscar_vagas)) {
             @Override
             public void onResponse(Call call, Response response) {
                 if(response.code() == 200) {
@@ -74,27 +82,34 @@ public class VisualizarVagasVinculadasUi extends AppCompatActivity {
                 Rotina rotina = rotinas.get(position);
                 Date data = new Date();
                 if(rotina.getData().before(data)) {
-                    Intent intent = new Intent(VisualizarVagasVinculadasUi.this,AvaliacaoContratanteUi.class);
+                    Fragment fragment = new AvaliacaoContratanteUi();
                     Gson gson = new Gson();
                     String json = gson.toJson(rotina);
-                    intent.putExtra("rotina",json);
-                    intent.putExtra("contratante",false);
-                    startActivity(intent);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("rotina",json);
+                    bundle.putBoolean("contratante",false);
+                    fragment.setArguments(bundle);
+                    getActivity().getSupportFragmentManager()
+                           .beginTransaction().replace(R.id.container,fragment).commit();
                 }
                 else {
-                    Intent intent = new Intent(VisualizarVagasVinculadasUi.this,VisualizacaoVagaUi.class);
+                    Bundle bundle = new Bundle();
                     Gson gson = new Gson();
                     String json = gson.toJson(rotina);
-                    intent.putExtra("rotina",json);
-                    intent.putExtra("contratante",false);
-                    startActivity(intent);
+                    bundle.putString("rotina",json);
+                    bundle.putBoolean("contratante",false);
+                    Fragment fragment = new VisualizacaoVagaUi();
+                    fragment.setArguments(bundle);
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction().replace(R.id.container,fragment).commit();
                 }
             }
         });
+        return view;
     }
 
     public void carregarListaVagas() {
-        VagaAdapter adapter = new VagaAdapter(this,rotinas);
+        VagaAdapter adapter = new VagaAdapter(getActivity(),rotinas);
         lvVagas.setAdapter(adapter);
     }
 }

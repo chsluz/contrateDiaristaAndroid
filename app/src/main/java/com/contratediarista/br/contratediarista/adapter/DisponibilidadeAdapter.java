@@ -61,26 +61,26 @@ public class DisponibilidadeAdapter extends BaseAdapter {
         TextView tvData = new TextView(activity);
         tvData.setText("Data: " + sdf.format(disponibilidade.getData()));
         tvData.setLayoutParams(params);
-        tvData.setTextSize(10*scaleSp);
+        tvData.setTextSize(6*scaleSp);
         linear.addView(tvData);
 
         TextView tvPeriodo = new TextView(activity);
         tvPeriodo.setText("Período: " + disponibilidade.getTipoPeriodo().getDescricao());
         tvPeriodo.setLayoutParams(params);
-        tvPeriodo.setTextSize(10*scaleSp);
+        tvPeriodo.setTextSize(6*scaleSp);
         linear.addView(tvPeriodo);
 
         TextView tvValor = new TextView(activity);
         tvValor.setText("Valor: " + disponibilidade.getValorPeriodo() +" R$");
         tvValor.setLayoutParams(params);
-        tvValor.setTextSize(10*scaleSp);
+        tvValor.setTextSize(6*scaleSp);
         linear.addView(tvValor);
 
         for(TipoAtividade tipo : disponibilidade.getTiposAtividade()) {
             TextView tvAtividade = new TextView(activity);
             tvAtividade.setText("Atividade: " + tipo.getDescricao());
             tvAtividade.setLayoutParams(params);
-            tvAtividade.setTextSize(9*scaleSp);
+            tvAtividade.setTextSize(6*scaleSp);
             linear.addView(tvAtividade);
         }
 

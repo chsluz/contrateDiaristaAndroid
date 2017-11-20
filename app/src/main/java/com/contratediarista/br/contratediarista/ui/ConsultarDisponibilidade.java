@@ -4,10 +4,15 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.contratediarista.br.contratediarista.R;
@@ -26,21 +31,27 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class ConsultarDisponibilidade extends AppCompatActivity {
+import static android.content.Context.MODE_PRIVATE;
+
+public class ConsultarDisponibilidade extends Fragment {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private ListView lvDisponibilidade;
+    private TextView tvNenhumaDisponibilidade;
     private Date dataInicial;
     private Date dataFinal;
     private String uidUsuario;
     private SharedPreferences sharedPreferences;
     private List<Disponibilidade> disponibilidades;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_consultar_disponibilidade);
-        lvDisponibilidade = (ListView) findViewById(R.id.lv_disponibilidade);
-        sharedPreferences = getSharedPreferences("informacoes_usuario", MODE_PRIVATE);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_consultar_disponibilidade, container, false);
+        lvDisponibilidade = (ListView) view.findViewById(R.id.lv_disponibilidade);
+        lvDisponibilidade.setVisibility(View.GONE);
+        tvNenhumaDisponibilidade = (TextView) view.findViewById(R.id.tv_nenhuma_disponibilidade_cadastrada);
+        tvNenhumaDisponibilidade.setVisibility(View.VISIBLE);
+        sharedPreferences = getActivity().getSharedPreferences("informacoes_usuario", MODE_PRIVATE);
         uidUsuario = sharedPreferences.getString("uidUsuario", "");
         dataInicial = new Date();
         Calendar dtFinal = Calendar.getInstance();
@@ -48,30 +59,37 @@ public class ConsultarDisponibilidade extends AppCompatActivity {
         dataFinal = dtFinal.getTime();
         disponibilidades = new ArrayList<>();
 
-
-
         lvDisponibilidade.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 final Disponibilidade disponibilidade = disponibilidades.get(position);
-                final ProgressDialog.Builder builder = new ProgressDialog.Builder(ConsultarDisponibilidade.this);
+                final ProgressDialog.Builder builder = new ProgressDialog.Builder(getActivity());
                 builder.setCancelable(false);
                 builder.setTitle("Excluir Disponibilidade");
                 builder.setMessage("Deseja realmente excluir esta disponibilidade? ");
                 builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Call call = new RetrofitInicializador().getRetrofit().create(DisponibilidadeService.class).excluirDisponibilidade(disponibilidade.getId());
+                        Call call = new RetrofitInicializador()
+                                .getRetrofit().create(DisponibilidadeService.class)
+                                .excluirDisponibilidade(disponibilidade.getId());
 
-                        RetrofitCallback callback = new RetrofitCallback(ConsultarDisponibilidade.this,"Excluindo Disponibilidade","Erro ao excluir disponibilidade"){
+                        RetrofitCallback callback =
+                                new RetrofitCallback(getActivity(),
+                                        "Excluindo Disponibilidade",
+                                        "Erro ao excluir disponibilidade"){
                             @Override
                             public void onResponse(Call call, Response response) {
                                 if(response.code() == 200) {
-                                    Toast.makeText(ConsultarDisponibilidade.this,"Disponibilidade excluída com sucesso.",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(),
+                                            "Disponibilidade excluída com sucesso.",
+                                            Toast.LENGTH_SHORT).show();
                                     carregarDisponibilidades();
                                 }
                                 else {
-                                        Toast.makeText(ConsultarDisponibilidade.this,"Erro ao excluir disponibilidade.",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(),
+                                            "Erro ao excluir disponibilidade.",
+                                            Toast.LENGTH_SHORT).show();
                                 }
                                 super.onResponse(call, response);
                             }
@@ -97,12 +115,16 @@ public class ConsultarDisponibilidade extends AppCompatActivity {
             }
         });
         carregarDisponibilidades();
+        return view;
     }
+
 
     private void carregarDisponibilidades() {
         Call call = new RetrofitInicializador().getRetrofit().create(DisponibilidadeService.class)
                 .buscarPorUsuarioEData(uidUsuario, sdf.format(dataInicial), sdf.format(dataFinal));
-        RetrofitCallback callback = new RetrofitCallback(ConsultarDisponibilidade.this, "Buscando disponibilidades cadastradas", "Erro ao buscar disponibilidades cadastradas") {
+        RetrofitCallback callback = new RetrofitCallback(getActivity(),
+                "Buscando disponibilidades cadastradas",
+                "Erro ao buscar disponibilidades cadastradas") {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response.code() == 200) {
@@ -111,21 +133,25 @@ public class ConsultarDisponibilidade extends AppCompatActivity {
                 }
                 super.onResponse(call, response);
                 if (response.code() != 200) {
-                    onBackPressed();
+                    lvDisponibilidade.setVisibility(View.GONE);
+                    tvNenhumaDisponibilidade.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(Call call, Throwable t) {
                 super.onFailure(call, t);
-                onBackPressed();
+                lvDisponibilidade.setVisibility(View.GONE);
+                tvNenhumaDisponibilidade.setVisibility(View.VISIBLE);
             }
         };
         call.enqueue(callback);
     }
 
     public void carregarListaDisponibilidades() {
-        DisponibilidadeAdapter adapter = new DisponibilidadeAdapter(this, disponibilidades);
+        lvDisponibilidade.setVisibility(View.VISIBLE);
+        tvNenhumaDisponibilidade.setVisibility(View.GONE);
+        DisponibilidadeAdapter adapter = new DisponibilidadeAdapter(getActivity(), disponibilidades);
         lvDisponibilidade.setAdapter(adapter);
 
     }

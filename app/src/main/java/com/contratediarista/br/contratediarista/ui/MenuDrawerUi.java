@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -46,27 +47,9 @@ public class MenuDrawerUi extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Call call = new RetrofitInicializador().getRetrofit().create(UsuarioService.class).buscarPorUid(firebaseAuth.getCurrentUser().getUid());
-        RetrofitCallback callback = new RetrofitCallback(this, getString(R.string.buscando_informacoes_usuario), getString(R.string.erro_buscar_informacoes_usuario)) {
-            @Override
-            public void onResponse(Call call, Response response) {
-                super.onResponse(call, response);
-                if (response.code() == javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
-                    usuario = (Usuario) response.body();
-                    inflateMenuNavigation();
-                }
-                if(response.code() == 204) {
-                    MenuDrawerUi.super.onBackPressed();
-                    Toast.makeText(MenuDrawerUi.this,"Usuário não cadastrado no sistema",Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                super.onFailure(call, t);
-                MenuDrawerUi.super.onBackPressed();
-            }
-        };
-        call.enqueue(callback);
+        if(!usuarioJaLogado()) {
+            carregarInformacoesDoUsuario();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -77,10 +60,59 @@ public class MenuDrawerUi extends AppCompatActivity
         inflateMenuNavigation();
     }
 
+
+    private void carregarInformacoesDoUsuario() {
+        Call call = new RetrofitInicializador()
+                .getRetrofit()
+                .create(UsuarioService.class)
+                .buscarPorUid(firebaseAuth.getCurrentUser().getUid());
+        RetrofitCallback callback = new RetrofitCallback(this,
+                getString(R.string.buscando_informacoes_usuario),
+                getString(R.string.erro_buscar_informacoes_usuario)) {
+            @Override
+            public void onResponse(Call call, Response response) {
+                super.onResponse(call, response);
+                if (response.code() == javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
+                    usuario = (Usuario) response.body();
+                    inflateMenuNavigation();
+                }
+                if (response.code() == 204) {
+                    MenuDrawerUi.super.onBackPressed();
+                    Toast.makeText(MenuDrawerUi.this,
+                            "Usuário não cadastrado no sistema",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                super.onFailure(call, t);
+                MenuDrawerUi.super.onBackPressed();
+            }
+        };
+        call.enqueue(callback);
+
+    }
+
+    private boolean usuarioJaLogado() {
+        SharedPreferences sharedPreferences = getSharedPreferences("informacoes_usuario", MODE_PRIVATE);
+        if(!sharedPreferences.getString("uidUsuario","").isEmpty()){
+            usuario = new Usuario();
+            usuario.setUid(sharedPreferences.getString("uidUsuario",""));
+            usuario.setNome(sharedPreferences.getString("nome",""));
+            usuario.setTipoUsuario(TipoUsuario.getTipoUsuario(sharedPreferences.getString("tipoUsuario","")));
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+
     public void inflateMenuNavigation() {
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        if(usuario != null) {
+        if (usuario != null) {
             SharedPreferences.Editor preferences = getSharedPreferences("informacoes_usuario", MODE_PRIVATE).edit();
             preferences.putString("uidUsuario", usuario.getUid());
             preferences.putString("nome", usuario.getNome());
@@ -91,13 +123,12 @@ public class MenuDrawerUi extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
         TextView tvEmail = (TextView) header.findViewById(R.id.tv_email);
         String email = firebaseAuth.getCurrentUser().getEmail();
-        if(!email.isEmpty() && tvEmail != null) {
+        if (!email.isEmpty() && tvEmail != null) {
             tvEmail.setText(email);
         }
-        if(usuario != null && usuario.getTipoUsuario().equals(TipoUsuario.CONTRATANTE)) {
+        if (usuario != null && usuario.getTipoUsuario().equals(TipoUsuario.CONTRATANTE)) {
             navigationView.inflateMenu(R.menu.menu_contratante);
-        }
-        else if(usuario != null && usuario.getTipoUsuario().equals(TipoUsuario.PRESTADOR)) {
+        } else if (usuario != null && usuario.getTipoUsuario().equals(TipoUsuario.PRESTADOR)) {
             navigationView.inflateMenu(R.menu.menu_prestador);
         }
         navigationView.setNavigationItemSelectedListener(this);
@@ -136,34 +167,77 @@ public class MenuDrawerUi extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if(id == R.id.menu_cadastrar_vaga) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container,new CadastrarVagaUi()).commit();
+        if (id == R.id.menu_cadastrar_vaga) {
+            getSupportActionBar().setTitle("Cadastrar Vaga");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new CadastrarVagaUi()).commit();
         }
-        if(id == R.id.menu_aprovacao_vaga) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container,new AprovacaoVagasUi()).commit();
+        else if(id == R.id.menu_cadastrar_tipo_atividade_contratante) {
+            getSupportActionBar().setTitle("Cadastrar Tipo de atividade");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new CadastrarTipoAtividadeUi()).commit();
         }
-        if(id == R.id.sair) {
+        else if(id == R.id.menu_vagas_cadastradas_contratante) {
+            getSupportActionBar().setTitle("Vagas Cadastradas");
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container,new ConsultarVagaCadastradaContratanteUi()).commit();
+        }
+        else if (id == R.id.menu_aprovacao_vaga) {
+            getSupportActionBar().setTitle("Aprovação de vagas");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new AprovacaoVagasUi()).commit();
+        }
+        else if(id == R.id.menu_agenda_contratante) {
+            getSupportActionBar().setTitle("Agenda");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new VisualizarVagasAprovadasUi()).commit();
+        }
+        else if(id == R.id.menu_consultar_disponibilidade_prestador) {
+            getSupportActionBar().setTitle("Consultar Disponibilidade do Prestador");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new ConsultarDisponibilidadePrestadorUi()).commit();
+        }
+        else if(id == R.id.menu_mensagens_contratante) {
+            getSupportActionBar().setTitle("Mensagens");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new MensagensUi()).commit();
+        }
+        else if(id == R.id.menu_cadastrar_disponibilidade) {
+            getSupportActionBar().setTitle("Cadastrar disponibilidade");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new CadastrarDisponibilidadeUi()).commit();
+        }
+        else if(id == R.id.menu_cadastrar_tipo_atividade_prestador) {
+            getSupportActionBar().setTitle("Cadastrar tipo atividade");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new CadastrarTipoAtividadeUi()).commit();
+        }else if(id == R.id.menu_consultar_vagas_prestador) {
+            getSupportActionBar().setTitle("Consultar vaga");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new ConsultarVagasUi()).commit();
+        }else if(id == R.id.menu_consultar_vagas_pretendidas) {
+            getSupportActionBar().setTitle("Consultar vagas pretendidas");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new VisualizarVagasJaCandidatouUi()).commit();
+        }else if(id == R.id.menu_agenda_prestador) {
+            getSupportActionBar().setTitle("Agenda");
+            Fragment fragment = new VisualizarVagasVinculadasUi();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment).commit();
+        }else if(id == R.id.menu_consultar_disponibilidade) {
+            getSupportActionBar().setTitle("Consultar Disponibilidade");
+            Fragment fragment = new ConsultarDisponibilidade();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment).commit();
+        }
+        else if(id == R.id.menu_mensagens_prestador) {
+            getSupportActionBar().setTitle("Mensagens");
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,new MensagensUi()).commit();
+        }
+        else if (id == R.id.sair) {
             firebaseAuth.signOut();
             LoginManager.getInstance().logOut();
+            limparDadosDoUsuarioNoAparelho();
             Intent intent = new Intent(MenuDrawerUi.this, LoginUi.class);
             startActivity(intent);
         }
-       /* if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
         DrawerLayout drawer;
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void limparDadosDoUsuarioNoAparelho() {
+        SharedPreferences.Editor editor = getSharedPreferences("informacoes_usuario", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.commit();
     }
 }

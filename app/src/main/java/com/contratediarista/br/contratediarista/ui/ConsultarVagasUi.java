@@ -1,10 +1,16 @@
 package com.contratediarista.br.contratediarista.ui;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,6 +24,7 @@ import com.contratediarista.br.contratediarista.R;
 import com.contratediarista.br.contratediarista.adapter.SpinnerTipoPeriodoAdapter;
 import com.contratediarista.br.contratediarista.enuns.DiasSemana;
 import com.contratediarista.br.contratediarista.enuns.TipoPeriodo;
+import com.facebook.ShareGraphRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -28,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ConsultarVagasUi extends AppCompatActivity {
+public class ConsultarVagasUi extends Fragment {
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     private SimpleDateFormat formatoJson = new SimpleDateFormat("yyyy-MM-dd");
     private EditText etDataInicial;
@@ -48,22 +55,26 @@ public class ConsultarVagasUi extends AppCompatActivity {
     private Date dataInicial;
     private Date dataFinal;
     private Button btnBuscarVaga;
+    private SharedPreferences sharedPreferences;
+    private String uidUsuario;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.consultar_vagas_ui);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.consultar_vagas_ui, container, false);
         dataInicial = new Date();
         dataFinal = new Date();
         tiposPeriodo = Arrays.asList(TipoPeriodo.values());
-        etDataInicial = (EditText) findViewById(R.id.et_data_inicial);
+        sharedPreferences = getActivity().getSharedPreferences("informacoes_usuario", Context.MODE_PRIVATE);
+        uidUsuario = sharedPreferences.getString("uidUsuario","");
+        etDataInicial = (EditText) view.findViewById(R.id.et_data_inicial);
         etDataInicial.setText(sdf.format(dataInicial));
-        etDataFinal = (EditText) findViewById(R.id.et_data_final);
+        etDataFinal = (EditText) view.findViewById(R.id.et_data_final);
         etDataFinal.setText(sdf.format(dataFinal));
-        etValorInicial = (EditText)findViewById(R.id.et_valor_inicial);
-        etValorFinal = (EditText) findViewById(R.id.et_valor_final);
-        spTipoPeriodo = (Spinner) findViewById(R.id.sp_tipo_periodo);
-        SpinnerTipoPeriodoAdapter adapter = new SpinnerTipoPeriodoAdapter(this,tiposPeriodo);
+        etValorInicial = (EditText) view.findViewById(R.id.et_valor_inicial);
+        etValorFinal = (EditText) view.findViewById(R.id.et_valor_final);
+        spTipoPeriodo = (Spinner) view.findViewById(R.id.sp_tipo_periodo);
+        SpinnerTipoPeriodoAdapter adapter = new SpinnerTipoPeriodoAdapter(getActivity(),tiposPeriodo);
         spTipoPeriodo.setAdapter(adapter);
         spTipoPeriodo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -76,36 +87,45 @@ public class ConsultarVagasUi extends AppCompatActivity {
 
             }
         });
-        checkSeg = (CheckBox) findViewById(R.id.check_seg);
-        checkTer = (CheckBox) findViewById(R.id.check_ter);
-        checkQua = (CheckBox) findViewById(R.id.check_qua);
-        checkQui = (CheckBox) findViewById(R.id.check_qui);
-        checkSex = (CheckBox) findViewById(R.id.check_sex);
-        checkSab = (CheckBox) findViewById(R.id.check_sab);
-        btnBuscarVaga = (Button) findViewById(R.id.btn_buscar_vaga);
+        checkSeg = (CheckBox) view.findViewById(R.id.check_seg);
+        checkTer = (CheckBox) view.findViewById(R.id.check_ter);
+        checkQua = (CheckBox) view.findViewById(R.id.check_qua);
+        checkQui = (CheckBox) view.findViewById(R.id.check_qui);
+        checkSex = (CheckBox) view.findViewById(R.id.check_sex);
+        checkSab = (CheckBox) view.findViewById(R.id.check_sab);
+        btnBuscarVaga = (Button) view.findViewById(R.id.btn_buscar_vaga);
         btnBuscarVaga.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 verificarCheckboxSelecionados();
                 boolean validacao = true;
                 if(etValorInicial.getText().equals("")) {
-                    Toast.makeText(ConsultarVagasUi.this,"Preencha o campo valor inicial",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            "Preencha o campo valor inicial",
+                            Toast.LENGTH_SHORT).show();
                     validacao = false;
                 }
                 if(etValorFinal.getText().equals("")) {
-                    Toast.makeText(ConsultarVagasUi.this,"Preencha o campo valor final",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            "Preencha o campo valor final",
+                            Toast.LENGTH_SHORT).show();
                     validacao = false;
                 }
                 if(tipoPeriodo == null) {
-                    Toast.makeText(ConsultarVagasUi.this,"Selecione o período",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            "Selecione o período",
+                            Toast.LENGTH_SHORT).show();
                     validacao = false;
                 }
                 if(diasSelecionados.isEmpty()) {
-                    Toast.makeText(ConsultarVagasUi.this,"Selecione pelo menos um dia da semana",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            "Selecione pelo menos um dia da semana",
+                            Toast.LENGTH_SHORT).show();
                     validacao = false;
                 }
-                if(validacao) {
+                if(validacao){
                     JsonObject jsonObjet = new JsonObject();
+                    jsonObjet.addProperty("uid",uidUsuario);
                     jsonObjet.addProperty("valorInicial",etValorInicial.getText().toString());
                     jsonObjet.addProperty("valorFinal",etValorFinal.getText().toString());
                     jsonObjet.addProperty("periodo",tipoPeriodo.ordinal());
@@ -119,9 +139,15 @@ public class ConsultarVagasUi extends AppCompatActivity {
                         arrayDias.add(jsonDia);
                     }
                     jsonObjet.add("diasSelecionados",arrayDias);
-                    Intent intent = new Intent(ConsultarVagasUi.this,VagasUi.class);
-                    intent.putExtra("jsonObject",jsonObjet.toString());
-                    startActivity(intent);
+
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("jsonObject",jsonObjet.toString());
+                    Fragment fragment = new VagasUi();
+                    fragment.setArguments(bundle);
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment).commit();
+
+
                 }
 
             }
@@ -168,7 +194,7 @@ public class ConsultarVagasUi extends AppCompatActivity {
                 int year = calendario.get(Calendar.YEAR);
                 int month = calendario.get(Calendar.MONTH);
                 int day = calendario.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(ConsultarVagasUi.this,dateInicial,year,month,day);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),dateInicial,year,month,day);
                 dialog.show();
             }
         });
@@ -180,10 +206,11 @@ public class ConsultarVagasUi extends AppCompatActivity {
                 int year = calendario.get(Calendar.YEAR);
                 int month = calendario.get(Calendar.MONTH);
                 int day = calendario.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(ConsultarVagasUi.this,dateFinal,year,month,day);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),dateFinal,year,month,day);
                 dialog.show();
             }
         });
+        return view;
     }
 
     public void verificarCheckboxSelecionados() {

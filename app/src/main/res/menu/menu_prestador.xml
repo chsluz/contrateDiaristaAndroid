@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_cadastrar_disponibilidade" android:title="@string/cadastrar_disponibilidade"/>
+    <item android:id="@+id/menu_cadastrar_tipo_atividade_prestador"
+        android:title="@string/cadastrar_tipo_atividade"/>
+    <item android:id="@+id/menu_consultar_vagas_prestador"
+        android:title="@string/consultar_vagas"/>
+    <item android:id="@+id/menu_consultar_vagas_pretendidas"
+        android:title="@string/consultar_vagas_pretendidas"/>
+    <item android:id="@+id/menu_agenda_prestador"
+        android:title="@string/menu_agenda_prestador"/>
+    <item android:id="@+id/menu_consultar_disponibilidade"
+        android:title="@string/consultar_disponibilidade"/>
+    <item android:id="@+id/menu_mensagens_prestador"
+        android:title="@string/mensagens"/>
     <item
         android:id="@+id/sair"
         android:orderInCategory="100"

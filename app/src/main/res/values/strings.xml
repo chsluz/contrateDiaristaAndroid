@@ -100,4 +100,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="logando">logando...</string>
     <string name="excluir">Excluir</string>
+    <string name="vagas_cadastradas">Vagas Cadastradas</string>
+    <string name="agenda">Agenda</string>
+    <string name="consultar_disponibilidade_prestador">Consultar disponibilidade prestador</string>
+    <string name="consultar_vagas">Consultar vagas</string>
+    <string name="consultar_vagas_pretendidas">Consultar vagas pretendidas</string>
+    <string name="menu_agenda_prestador">Agenda</string>
 </resources>

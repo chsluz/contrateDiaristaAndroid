@@ -1,9 +1,14 @@
 package com.contratediarista.br.contratediarista.ui;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -40,7 +45,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class CadastrarDisponibilidadeUi extends AppCompatActivity {
+public class CadastrarDisponibilidadeUi extends Fragment {
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     private SimpleDateFormat formatoJson = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -56,25 +61,29 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
     private EditText etValor;
     private Spinner spTipoPeriodo;
     private String uidUsuario;
+    private SharedPreferences sharedPreferences;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.cadastrar_disponibilidade_ui);
-        Bundle extra = getIntent().getExtras();
-        if(extra != null) {
-            uidUsuario = extra.get("uidUsuario").toString();
-        }
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.cadastrar_disponibilidade_ui, container, false);
+        sharedPreferences = getActivity().getSharedPreferences("informacoes_usuario", Context.MODE_PRIVATE);
+        uidUsuario = sharedPreferences.getString("uidUsuario","");
         listaCheckboxAtividades = new ArrayList<>();
-        linearLayout = (LinearLayout) findViewById(R.id.linear_cadastrar_disponibilidade);
+        linearLayout = (LinearLayout) view.findViewById(R.id.linear_cadastrar_disponibilidade);
         carregarListaTipoAtividade();
         data = new Date();
+        return view;
     }
+
 
     public void carregarListaTipoAtividade() {
         tiposAtividade = new ArrayList<>();
         Call call = new RetrofitInicializador().getRetrofit().create(TipoAtividadeService.class).listarTodos();
-        RetrofitCallback callback = new RetrofitCallback(this,getString(R.string.carregando_lista_atividades),getString(R.string.erro_carregar_lista_atividades)) {
+        RetrofitCallback callback =
+                new RetrofitCallback(getActivity(),
+                        getString(R.string.carregando_lista_atividades),
+                        getString(R.string.erro_carregar_lista_atividades)) {
             @Override
             public void onResponse(Call call, Response response) {
                 if(response.code() == 200) {
@@ -107,13 +116,13 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
                 new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         param.setMargins((int) (15*scale),(int) (3*scale),0,0);
 
-        TextView tvData = new TextView(this);
+        TextView tvData = new TextView(getActivity());
         tvData.setText(getString(R.string.data));
         tvData.setLayoutParams(param);
 
         linearLayout.addView(tvData);
 
-        etData = new EditText(this);
+        etData = new EditText(getActivity());
         etData.setText(sdf.format(data));
         etData.setLayoutParams(param);
         etData.setInputType(InputType.TYPE_CLASS_DATETIME);
@@ -126,7 +135,7 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
 
         linearLayout.addView(etData);
 
-        TextView tvTipoPeriodo = new TextView(this);
+        TextView tvTipoPeriodo = new TextView(getActivity());
         tvTipoPeriodo.setLayoutParams(param);
         tvTipoPeriodo.setText(getString(R.string.tipo_periodo));
 
@@ -134,14 +143,14 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
 
         tiposPeriodo = Arrays.asList(TipoPeriodo.values());
 
-        spTipoPeriodo = new Spinner(this);
+        spTipoPeriodo = new Spinner(getActivity());
         spTipoPeriodo.setLayoutMode(Spinner.MODE_DIALOG);
         LinearLayout.LayoutParams paramSpinner = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         paramSpinner.setMargins((int) (15*scale),(int) (3*scale),0,0);
         spTipoPeriodo.setLayoutParams(paramSpinner);
 
-        SpinnerTipoPeriodoAdapter adapter = new SpinnerTipoPeriodoAdapter(this,tiposPeriodo);
+        SpinnerTipoPeriodoAdapter adapter = new SpinnerTipoPeriodoAdapter(getActivity(),tiposPeriodo);
         spTipoPeriodo.setAdapter(adapter);
         spTipoPeriodo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -157,18 +166,18 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
 
         linearLayout.addView(spTipoPeriodo);
 
-        TextView tvValor = new TextView(this);
+        TextView tvValor = new TextView(getActivity());
         tvValor.setLayoutParams(param);
         tvValor.setText(getString(R.string.valor_periodo));
         linearLayout.addView(tvValor);
 
-        etValor = new EditText(this);
+        etValor = new EditText(getActivity());
         etValor.setInputType(InputType.TYPE_CLASS_NUMBER);
         etValor.setLayoutParams(param);
         linearLayout.addView(etValor);
 
 
-        LinearLayout linearCheckbox = new LinearLayout(this);
+        LinearLayout linearCheckbox = new LinearLayout(getActivity());
         linearCheckbox.setId(View.generateViewId());
         linearCheckbox.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -176,7 +185,7 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins((int) (15*scale),(int)(3*scale),0,0);
-            CheckBox checkBox = new CheckBox(this);
+            CheckBox checkBox = new CheckBox(getActivity());
             checkBox.setId(View.generateViewId());
             checkBox.setText(tipo.getDescricao());
             checkBox.setLayoutParams(params);
@@ -187,7 +196,7 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
             else {
                 i = 1;
                 linearLayout.addView(linearCheckbox);
-                linearCheckbox = new LinearLayout(this);
+                linearCheckbox = new LinearLayout(getActivity());
                 linearCheckbox.setId(View.generateViewId());
                 linearCheckbox.setOrientation(LinearLayout.HORIZONTAL);
                 linearCheckbox.addView(checkBox);
@@ -196,7 +205,7 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
         }
         linearLayout.addView(linearCheckbox);
 
-        Button btnCadastrar = new Button(this);
+        Button btnCadastrar = new Button(getActivity());
         LinearLayout.LayoutParams buttonParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         buttonParam.setMargins((int) (10*scale),0,(int)(10*scale),0);
         btnCadastrar.setLayoutParams(buttonParam);
@@ -207,15 +216,18 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
                 boolean validacao = true;
                 verificarListaAtividadesSelecionados();
                 if(tipoPeriodo == null) {
-                    Toast.makeText(CadastrarDisponibilidadeUi.this,getString(R.string.selecione_tipo_periodo),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            getString(R.string.selecione_tipo_periodo),Toast.LENGTH_SHORT).show();
                     validacao = false;
                 }
                 if(etValor.getText().equals("")) {
-                    Toast.makeText(CadastrarDisponibilidadeUi.this,getString(R.string.digite_valor_periodo),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            getString(R.string.digite_valor_periodo),Toast.LENGTH_SHORT).show();
                     validacao = false;
                 }
                 if(atividadesSelecionadas.isEmpty()) {
-                    Toast.makeText(CadastrarDisponibilidadeUi.this,getString(R.string.selecione_pelo_menos_uma_atividade),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            getString(R.string.selecione_pelo_menos_uma_atividade),Toast.LENGTH_SHORT).show();
                     validacao = false;
                 }
                 if(validacao) {
@@ -234,11 +246,13 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
                     RequestBody body = RequestBody.create(MediaType.parse("json"),jsonObjet.toString());
                     Call call = new RetrofitInicializador().getRetrofit()
                             .create(DisponibilidadeService.class).cadastrarDisponibilidade(uidUsuario,body);
-                    RetrofitCallback callback = new RetrofitCallback(CadastrarDisponibilidadeUi.this,getString(R.string.cadastrando_disponibilidade),getString(R.string.erro_cadastrar_disponibilidade)) {
+                    RetrofitCallback callback =
+                            new RetrofitCallback(getActivity(),getString(R.string.cadastrando_disponibilidade),getString(R.string.erro_cadastrar_disponibilidade)) {
                         @Override
                         public void onResponse(Call call, Response response) {
                             if(response.code() == javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
-                                Toast.makeText(CadastrarDisponibilidadeUi.this,getApplicationContext().getString(R.string.disponibilidade_cadastrada_sucesso),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(),
+                                        getActivity().getString(R.string.disponibilidade_cadastrada_sucesso),Toast.LENGTH_SHORT).show();
                             }
                             super.onResponse(call, response);
                         }
@@ -291,7 +305,7 @@ public class CadastrarDisponibilidadeUi extends AppCompatActivity {
         int year = calendario.get(Calendar.YEAR);
         int month = calendario.get(Calendar.MONTH);
         int day = calendario.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog dialog = new DatePickerDialog(CadastrarDisponibilidadeUi.this,datePicker,year,month,day);
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(),datePicker,year,month,day);
         dialog.show();
     }
 }

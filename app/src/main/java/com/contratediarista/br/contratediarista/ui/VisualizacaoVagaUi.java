@@ -1,6 +1,7 @@
 package com.contratediarista.br.contratediarista.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -8,11 +9,16 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +42,7 @@ import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCallback {
+public class VisualizacaoVagaUi extends Fragment implements OnMapReadyCallback {
     Gson gson = new Gson();
     Rotina rotina;
     private GoogleMap mMap;
@@ -48,22 +54,22 @@ public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCa
     private boolean jaCandidato;
     private boolean contratante;
 
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_visualizacao_vaga_ui);
-        sharedPreferences = getSharedPreferences("informacoes_usuario",MODE_PRIVATE);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_visualizacao_vaga_ui, container, false);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            rotina = gson.fromJson(bundle.get("rotina").toString(),Rotina.class);
+            contratante = bundle.getBoolean("contratante");
+        }
+
+        sharedPreferences = getActivity().getSharedPreferences("informacoes_usuario",Context.MODE_PRIVATE);
         uidUsuario = sharedPreferences.getString("uidUsuario","");
 
-        btnCandidatar = (Button) findViewById(R.id.btn_candidatar);
-        tvJaCandidatou = (TextView) findViewById(R.id.tv_ja_candidato);
-        Bundle extra = getIntent().getExtras();
+        btnCandidatar = (Button) view.findViewById(R.id.btn_candidatar);
+        tvJaCandidatou = (TextView) view.findViewById(R.id.tv_ja_candidato);
 
-        if(extra != null) {
-            rotina = gson.fromJson(extra.get("rotina").toString(),Rotina.class);
-            contratante = extra.getBoolean("contratante");
-        }
         if(rotina != null) {
             double lat = rotina.getVaga().getEndereco().getLatitude();
             double lng = rotina.getVaga().getEndereco().getLongitude();
@@ -84,17 +90,24 @@ public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCa
             @Override
             public void onClick(View v) {
                 if(rotina.getPrestadores().size() >= 5) {
-                    Toast.makeText(VisualizacaoVagaUi.this,"Número máximo de candidatos já preenchido",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),
+                            "Número máximo de candidatos já preenchido",
+                            Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Call call = new RetrofitInicializador().getRetrofit().create(RotinaService.class).candidatarVaga(uidUsuario,rotina.getId());
-                    RetrofitCallback callback = new RetrofitCallback(VisualizacaoVagaUi.this,getString(R.string.candidatando_vaga),getString(R.string.erro_candidatar_vaga)){
+                    Call call = new RetrofitInicializador().getRetrofit()
+                            .create(RotinaService.class).candidatarVaga(uidUsuario,rotina.getId());
+                    RetrofitCallback callback =
+                            new RetrofitCallback(getActivity(),
+                                    getString(R.string.candidatando_vaga),
+                                    getString(R.string.erro_candidatar_vaga)){
                         @Override
                         public void onResponse(Call call, Response response) {
                             if(response.code() == 200) {
                                 btnCandidatar.setVisibility(View.GONE);
                                 tvJaCandidatou.setVisibility(View.VISIBLE);
-                                Toast.makeText(VisualizacaoVagaUi.this,"Candidatou-se com sucesso.",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(),
+                                        "Candidatou-se com sucesso.",Toast.LENGTH_SHORT).show();
                             }
                             super.onResponse(call, response);
                         }
@@ -109,9 +122,11 @@ public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCa
             }
         });
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        return view;
     }
 
     @Override
@@ -125,7 +140,7 @@ public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCa
 
 
     public void center() throws  SecurityException{
-        LocationManager locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         //location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, true));
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -150,7 +165,4 @@ public class VisualizacaoVagaUi extends FragmentActivity implements OnMapReadyCa
             return false;
         }
     }
-
-
-
 }

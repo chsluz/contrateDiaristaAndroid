@@ -52,9 +52,6 @@
             android:name=".ui.MensagensUi"
             android:label="@string/mensagens" />
         <activity
-            android:name=".ui.CadastrarVagaUi"
-            android:label="@string/cadastrar_vaga" />
-        <activity
             android:name=".ui.CadastrarDisponibilidadeUi"
             android:label="@string/cadastrar_disponibilidade" />
         <activity android:name=".ui.CadastrarTipoAtividadeUi" />
@@ -76,18 +73,6 @@
         <activity
             android:name=".ui.ConsultarDisponibilidade"
             android:label="@string/consultar_disponibilidade" />
-        <activity
-            android:name=".ui.AprovacaoVagasUi"
-            android:label="@string/aprovacao_vagas" />
-        <activity
-            android:name=".ui.VisualizarAprovacaoVagaUi"
-            android:label="@string/visualizar_aprovacao_vagas" />
-        <activity
-            android:name=".ui.InformacoesAprovacaoUi"
-            android:label="@string/informacoes_aprovacao" />
-        <activity
-            android:name=".ui.InformacoesUsuarioUi"
-            android:label="@string/informacoes_usuario" />
         <activity
             android:name=".ui.ConsultarDisponibilidadePrestadorUi"
             android:label="@string/consultar_disponibilidades_cadastradas" />
